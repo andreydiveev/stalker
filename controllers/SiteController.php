@@ -129,6 +129,8 @@ class SiteController extends Controller
                 // Заполняем $form данными которые пришли с формы
                 $form->attributes = $_POST['User'];
 
+                $form->reg_date = time();
+
                 // В validate мы передаем название сценария. Оно нам может понадобиться
                 // когда будем заниматься созданием правил валидации [читайте дальше]
                 if($form->validate('registration')) {

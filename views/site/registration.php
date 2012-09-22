@@ -18,6 +18,11 @@
         <td><?=CHtml::activePasswordField($model, 'password') ?></td>
     </tr>
     <tr>
+        <!-- Выводим поле для ника !-->
+        <td width="150"><?=CHtml::activeLabel($model, 'nick'); ?></td>
+        <td><?=CHtml::activeTextField($model, 'nick') ?></td>
+    </tr>
+    <tr>
         <td></td>
         <!-- Кнопка "регистрация" !-->
         <td><?=CHtml::submitButton('Регистрация', array('id' => "submit")); ?></td>
