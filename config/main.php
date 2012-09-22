@@ -5,7 +5,7 @@
 
 // This is the main Web application configuration. Any writable
 // CWebApplication properties can be configured here.
-return array(
+$config = array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'My Web Application',
 
@@ -88,3 +88,10 @@ return array(
 		'adminEmail'=>'webmaster@example.com',
 	),
 );
+
+if (defined('YII_ENVIRONMENT') && file_exists(dirname(__FILE__). '/.'.YII_ENVIRONMENT.'.php')){
+    $custom = include(dirname(__FILE__). '/.'.YII_ENVIRONMENT.'.php');
+    $config = CMap::mergeArray($config,$custom);
+}
+
+return $config;
