@@ -75,30 +75,32 @@ class SiteController extends Controller
 	/**
 	 * Displays the login page
 	 */
-	public function actionLogin()
-	{
-		$model=new LoginForm;
+    public function actionLogin()
+    {
+        $model = new User();
 
-		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
+        // Проверяем является ли пользователь гостем
+        // ведь если он уже зарегистрирован - формы он не должен увидеть.
+        if (!Yii::app()->user->isGuest) {
+            throw new CException('Вы уже зарегистрированы!');
+        } else {
+            if (!empty($_POST['User'])) {
+                $model->attributes = $_POST['User'];
 
-		// collect user input data
-		if(isset($_POST['LoginForm']))
-		{
-			$model->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
-		}
-		// display the login form
-		$this->render('login',array('model'=>$model));
-	}
+                // Проверяем правильность данных
+                if($model->validate('login')) {
+                    // если всё ок - кидаем на главную страницу
+                    $this->redirect(Yii::app()->homeUrl);
+                }else{
+                    Yii::app()->user->setFlash('error','Неправильный логин или пароль');
+                    $this->refresh();
+                }
+            }
+            $this->render('login', array('model' => $model));
+        }
+    }
 
-	/**
+    /**
 	 * Logs out the current user and redirect to homepage.
 	 */
 	public function actionLogout()
@@ -106,4 +108,61 @@ class SiteController extends Controller
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
 	}
+
+
+    public function actionRegistration()
+    {
+        // тут думаю все понятно
+        $form = new User();
+
+        // Проверяем являеться ли пользователь гостем
+        // ведь если он уже зарегистрирован - формы он не должен увидеть.
+        if (!Yii::app()->user->isGuest) {
+            throw new CException('Вы уже зарегистрированны!');
+        } else {
+            // Если $_POST['User'] не пустой массив - значит была отправлена форма
+            // следовательно нам надо заполнить $form этими данными
+            // и провести валидацию. Если валидация пройдет успешно - пользователь
+            // будет зарегистрирован, не успешно - покажем ошибку на экран
+            if (!empty($_POST['User'])) {
+
+                // Заполняем $form данными которые пришли с формы
+                $form->attributes = $_POST['User'];
+
+                // В validate мы передаем название сценария. Оно нам может понадобиться
+                // когда будем заниматься созданием правил валидации [читайте дальше]
+                if($form->validate('registration')) {
+                    // Если валидация прошла успешно...
+                    // Тогда проверяем свободен ли указанный логин..
+
+                    if ($form->model()->count("email = :email", array(':email' => $form->email))) {
+                        // Указанный логин уже занят. Создаем ошибку и передаем в форму
+                        $form->addError('email', 'Логин уже занят');
+                        $this->render("registration", array('model' => $form));
+                    } else {
+                        // Выводим страницу что "все окей"
+                        $form->save();
+                        $this->render("registration_ok");
+                    }
+
+                } else {
+                    // Если введенные данные противоречат
+                    // правилам валидации (указаны в rules) тогда
+                    // выводим форму и ошибки.
+                    // [Внимание!] Нам ненадо передавать ошибку в отображение,
+                    // Она автоматически после валидации цепляеться за
+                    // $form и будет [автоматически] показана на странице с
+                    // формой! Так что мы тут делаем простой рэндер.
+
+                    $this->render("registration", array('model' => $form));
+                }
+            } else {
+                // Если $_POST['User'] пустой массив - значит форму некто не отправлял.
+                // Это значит что пользователь просто вошел на страницу регистрации
+                // и ему мы должны просто показать форму.
+
+                $this->render("registration", array('model' => $form));
+            }
+        }
+    }
 }
