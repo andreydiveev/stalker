@@ -2,7 +2,7 @@
 
 // This is the configuration for yiic console application.
 // Any writable CConsoleApplication properties can be configured here.
-return array(
+$config = array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'My Console Application',
 
@@ -35,3 +35,10 @@ return array(
 		),
 	),
 );
+
+
+if (defined('YII_ENVIRONMENT') && file_exists(dirname(__FILE__). '/.'.YII_ENVIRONMENT.'.php')){
+    $custom = include(dirname(__FILE__). '/.'.YII_ENVIRONMENT.'.php');
+    $config = CMap::mergeArray($config,$custom);
+}
+return $config;
