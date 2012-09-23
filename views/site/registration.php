@@ -18,6 +18,11 @@
         <td><?=CHtml::activePasswordField($model, 'password') ?></td>
     </tr>
     <tr>
+        <!-- Выводим поле для пароля2 !-->
+        <td><?=CHtml::label('Пароль еще раз','User[password2]'); ?></td>
+        <td><?=CHtml::passwordField('User[password2]') ?></td>
+    </tr>
+    <tr>
         <!-- Выводим поле для ника !-->
         <td width="150"><?=CHtml::activeLabel($model, 'nick'); ?></td>
         <td><?=CHtml::activeTextField($model, 'nick') ?></td>

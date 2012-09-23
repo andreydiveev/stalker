@@ -95,7 +95,7 @@ class SiteController extends Controller
                 $this->redirect(Yii::app()->user->returnUrl);
             }
 
-            Yii::app()->user->setFlash('error', $model->getErrors());
+            Yii::app()->user->setFlash('error', 'Неправильный логин или пароль');
         }
 //		echo $model->errorCode;
         // display the login form
@@ -139,11 +139,31 @@ class SiteController extends Controller
                     // Если валидация прошла успешно...
                     // Тогда проверяем свободен ли указанный логин..
 
-                    if ($form->model()->count("email = :email", array(':email' => $form->email))) {
-                        // Указанный логин уже занят. Создаем ошибку и передаем в форму
-                        $form->addError('email', 'Логин уже занят');
+                    if (empty($form->email)) {
+                        $form->addError('email', ' Email не указан');
                         $this->render("registration", array('model' => $form));
-                    } else {
+
+                    } elseif ($form->model()->count("email = :email", array(':email' => $form->email))) {
+                        // Указанный Email уже занят. Создаем ошибку и передаем в форму
+                        $form->addError('email', ' Email уже занят');
+                        $this->render("registration", array('model' => $form));
+
+                    } elseif ($form->model()->count("nick = :nick", array(':nick' => $form->nick))) {
+                        // Указанный Ник уже занят. Создаем ошибку и передаем в форму
+                        $form->addError('nick', 'Ник уже занят');
+                        $this->render("registration", array('model' => $form));
+
+                    } elseif (empty($form->nick)) {
+                        $form->addError('nick', ' Ник не указан');
+                        $this->render("registration", array('model' => $form));
+
+                    } elseif ($form->password != $_POST['User']['password2']) {
+                        // Указанный Ник уже занят. Создаем ошибку и передаем в форму
+                        $form->addError('password2', 'Пароли не совпадают');
+                        $this->render("registration", array('model' => $form));
+
+                    }else {
+                        $form->password = md5($form->password);
                         // Выводим страницу что "все окей"
                         $form->save();
                         $this->render("registration_ok");
