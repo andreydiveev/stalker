@@ -92,7 +92,7 @@ class SiteController extends Controller
             $model->attributes=$_POST['LoginForm'];
             // validate user input and redirect to the previous page if valid
             if($model->validate() && $model->login()) {
-                $this->redirect(Yii::app()->user->returnUrl);
+                $this->redirect('/profile/index');
             }
 
             Yii::app()->user->setFlash('error', 'Неправильный логин или пароль');
@@ -111,6 +111,49 @@ class SiteController extends Controller
 		$this->redirect(Yii::app()->homeUrl);
 	}
 
+
+    public function actionZone(){
+        if($id = Yii::app()->request->getParam('id')){
+
+            $zone = Zone::model()->findByPk($id);
+
+            if($zone !== null){
+
+                $this->breadcrumbs = array($zone->name);
+                $areas = $zone->areas;
+
+                $this->render('areas', array('areas' => $areas));
+                Yii::app()->end();
+            }
+
+        }
+
+        $zone = Zone::model()->findAll();
+        $this->render('zone', array('zone'=>$zone));
+    }
+
+    public function actionArea(){
+        if($id = Yii::app()->request->getParam('id')){
+
+            $area = Area::model()->findByPk($id);
+
+            if($area !== null){
+
+                $this->breadcrumbs = array(
+                    $area->zone->name => array('/site/zone/'.$area->zone->id),
+                    $area->name,
+                );
+
+                Yii::app()->user->setArea($area->id);
+
+                $this->render('area', array('area'=>$area));
+                Yii::app()->end();
+            }
+
+        }
+
+        $this->redirect('/site/zone');
+    }
 
     public function actionRegistration()
     {
@@ -166,7 +209,7 @@ class SiteController extends Controller
                         $form->password = md5($form->password);
                         // Выводим страницу что "все окей"
                         $form->save();
-                        $this->render("registration_ok");
+                        $this->redirect('/profile/index');
                     }
 
                 } else {
@@ -189,4 +232,34 @@ class SiteController extends Controller
             }
         }
     }
+
+    public function filters()
+    {
+        return array(
+            'AccessControl + zone, area',
+            'Trace',
+        );
+    }
+
+    public function filterAccessControl($filterChain)
+    {
+        // для выполнения последующих фильтров и выполнения действия вызовите метод $filterChain->run()
+
+        if(!Yii::app()->user->isGuest){
+            $filterChain->run();
+        }else{
+            $this->redirect('/site/login');
+        }
+    }
+
+    public function filterTrace($filterChain)
+    {
+        // для выполнения последующих фильтров и выполнения действия вызовите метод $filterChain->run()
+
+        if(!Yii::app()->user->isGuest){
+            Yii::app()->user->setActivity();
+        }
+        $filterChain->run();
+    }
+
 }

@@ -48,7 +48,7 @@ class User extends CActiveRecord
 			array('email, password, password2, nick, reg_date', 'required', 'on'=>'registration'),
             array('email, password', 'required', 'on'=>'login'),
 			array('reg_date, last_activity, total_time, frag, squad, expo, level, current_hp', 'numerical', 'integerOnly'=>true),
-            array('email', 'email','checkMX'=>true),
+            array('email', 'email','checkMX'=>false),
 			array('password', 'length', 'max'=>128),
             array('password', 'length', 'min'=>6),
 			array('nick', 'length', 'max'=>20),
@@ -65,8 +65,10 @@ class User extends CActiveRecord
 	{
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
-		return array(
-		);
+        return array(
+            'userArms' => array(self::HAS_MANY, 'UserArms', 'user_id'),
+            'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'user_id'),
+        );
 	}
 
 	/**
@@ -87,6 +89,7 @@ class User extends CActiveRecord
 			'expo' => 'Expo',
 			'level' => 'Level',
 			'current_hp' => 'Current Hp',
+            'current_area' => 'Current Area',
 		);
 	}
 
@@ -113,6 +116,7 @@ class User extends CActiveRecord
 		$criteria->compare('expo',$this->expo);
 		$criteria->compare('level',$this->level);
 		$criteria->compare('current_hp',$this->current_hp);
+        $criteria->compare('current_area',$this->current_area);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

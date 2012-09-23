@@ -19,6 +19,26 @@ class WebUser extends CWebUser
         return $user->reg_date;
     }
 
+    public function setArea($id){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+        $user->current_area = $id;
+        $user->save();
+    }
+
+    public function setActivity(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+        $user->last_activity = time();
+        $user->save();
+    }
+
     /**
      * @param $id
      * @return User
@@ -32,4 +52,5 @@ class WebUser extends CWebUser
         }
         return $model;
     }
+
 }
