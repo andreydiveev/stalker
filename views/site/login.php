@@ -25,11 +25,10 @@ $this->breadcrumbs=array(
     <p class="note">
     <?php
         if(Yii::app()->user->hasFlash('error')){
-            echo Yii::app()->user->getFlash('error');
+            print_r(Yii::app()->user->getFlash('error'));
         }
     ?>
     </p>
-
 	<div class="row">
 		<?php echo $form->labelEx($model,'email'); ?>
 		<?php echo $form->textField($model,'email'); ?>

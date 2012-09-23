@@ -72,32 +72,34 @@ class SiteController extends Controller
 		$this->render('contact',array('model'=>$model));
 	}
 
-	/**
-	 * Displays the login page
-	 */
+    /**
+     * Displays the login page
+     */
     public function actionLogin()
     {
-        $model = new User();
+        $model=new LoginForm;
 
-        // Проверяем является ли пользователь гостем
-        // ведь если он уже зарегистрирован - формы он не должен увидеть.
-        if (!Yii::app()->user->isGuest) {
-            throw new CException('Вы уже зарегистрированы!');
-        } else {
-            if (!empty($_POST['User'])) {
-                $model->attributes = $_POST['User'];
-
-                // Проверяем правильность данных
-                if($model->validate('login')) {
-                    // если всё ок - кидаем на главную страницу
-                    $this->redirect(Yii::app()->homeUrl);
-                }else{
-                    Yii::app()->user->setFlash('error','Неправильный логин или пароль');
-                    $this->refresh();
-                }
-            }
-            $this->render('login', array('model' => $model));
+        // if it is ajax validation request
+        if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
+        {
+            echo CActiveForm::validate($model);
+            Yii::app()->end();
         }
+
+        // collect user input data
+        if(isset($_POST['LoginForm']))
+        {
+            $model->attributes=$_POST['LoginForm'];
+            // validate user input and redirect to the previous page if valid
+            if($model->validate() && $model->login()) {
+                $this->redirect(Yii::app()->user->returnUrl);
+            }
+
+            Yii::app()->user->setFlash('error', $model->getErrors());
+        }
+//		echo $model->errorCode;
+        // display the login form
+        $this->render('login',array('model'=>$model));
     }
 
     /**

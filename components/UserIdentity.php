@@ -10,7 +10,8 @@ class UserIdentity extends CUserIdentity
     private $_id;
     public function authenticate()
     {
-        $record=User::model()->findByAttributes(array('email'=>$this->email));
+        $record=User::model()->findByAttributes(array('email'=>$this->username));
+
         if($record===null)
             $this->errorCode=self::ERROR_USERNAME_INVALID;
         else if($record->password!==md5($this->password))
@@ -18,7 +19,7 @@ class UserIdentity extends CUserIdentity
         else
         {
             $this->_id=$record->id;
-            $this->setState('title', $record->title);
+            $this->setState('nick', $record->nick);
             $this->errorCode=self::ERROR_NONE;
         }
         return !$this->errorCode;
