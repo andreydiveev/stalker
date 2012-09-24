@@ -5,7 +5,9 @@ class ProfileController extends Controller
 	public function actionIndex()
 	{
 
-		$this->render('index');
+		$this->render('index', array(
+            "userArms" => User::model()
+        ));
 	}
 
 

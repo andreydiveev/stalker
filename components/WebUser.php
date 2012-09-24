@@ -38,6 +38,7 @@ class WebUser extends CWebUser
         $user->last_activity = time();
         $user->save();
     }
+
     public function getSquad(){
         if(Yii::app()->user->isGuest){
             return false;
@@ -47,6 +48,7 @@ class WebUser extends CWebUser
 
         return $user->squad;
     }
+
     public function getLevel(){
         if(Yii::app()->user->isGuest){
             return false;
@@ -56,6 +58,7 @@ class WebUser extends CWebUser
 
         return $user->level;
     }
+
     public function getCurrentHp(){
         if(Yii::app()->user->isGuest){
             return false;
@@ -65,6 +68,7 @@ class WebUser extends CWebUser
 
         return $user->current_hp;
     }
+
     public function getExpo(){
         if(Yii::app()->user->isGuest){
             return false;
@@ -74,6 +78,7 @@ class WebUser extends CWebUser
 
         return $user->expo;
     }
+
     public function getFrag(){
         if(Yii::app()->user->isGuest){
             return false;
@@ -83,6 +88,7 @@ class WebUser extends CWebUser
 
         return $user->frag;
     }
+
     public function getTotalTime(){
         if(Yii::app()->user->isGuest){
             return false;
@@ -91,6 +97,36 @@ class WebUser extends CWebUser
         $user = $this->loadModel(Yii::app()->user->id);
 
         return $user->total_time;
+    }
+
+    public function getArms(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->arms;
+    }
+
+    public function getEquipments(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->equipments;
+    }
+
+    public function getCash(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->cash;
     }
     /**
      * @param $id

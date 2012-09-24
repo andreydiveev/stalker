@@ -15,4 +15,10 @@ $this->breadcrumbs=array(
 опыт: <?php echo Yii::app()->user->getExpo(); ?><br/>
 фраги: <?php echo Yii::app()->user->getFrag(); ?><br/>
 общее время игры: <?php echo Yii::app()->user->getTotalTime(); ?><br/>
+деньги: <?php echo Yii::app()->user->getCash(); ?><br/>
+<p/>
+<h3>Оружие:</h3>
+<?php foreach (Yii::app()->user->getArms() as $arms):?>
+    <?php echo $arms->arms->name;?><br/>
+<?php endforeach; ?>
 
