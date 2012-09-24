@@ -38,7 +38,60 @@ class WebUser extends CWebUser
         $user->last_activity = time();
         $user->save();
     }
+    public function getSquad(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
 
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->squad;
+    }
+    public function getLavel(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->level;
+    }
+    public function getCurrentHp(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->current_hp;
+    }
+    public function getExpo(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->expo;
+    }
+    public function getFrag(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->frag;
+    }
+    public function getTotalTime(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+
+        return $user->total_time;
+    }
     /**
      * @param $id
      * @return User
