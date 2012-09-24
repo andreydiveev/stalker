@@ -15,7 +15,4 @@ $this->breadcrumbs=array(
 опыт: <?php echo Yii::app()->user->getExpo(); ?><br/>
 фраги: <?php echo Yii::app()->user->getFrag(); ?><br/>
 общее время игры: <?php echo Yii::app()->user->getTotalTime(); ?><br/>
-<p>
-	You may change the content of this page by modifying
-	the file <tt><?php echo __FILE__; ?></tt>.
-</p>
+

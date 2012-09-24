@@ -47,7 +47,7 @@ class WebUser extends CWebUser
 
         return $user->squad;
     }
-    public function getLavel(){
+    public function getLevel(){
         if(Yii::app()->user->isGuest){
             return false;
         }
