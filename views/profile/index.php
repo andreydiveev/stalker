@@ -7,6 +7,9 @@ $this->breadcrumbs=array(
 ?>
 <h1><?php echo Yii::app()->user->nick; ?></h1>
 
+<?php if(Yii::app()->user->hasFlash('msg')):?>
+    <?php echo Yii::app()->user->getFlash('msg');?><p/><p/>
+<?php endif;?>
 
 дата регистрации: <?php echo Yii::app()->user->getRegDate(); ?><br/>
 отряд: <?php echo Yii::app()->user->getSquad(); ?><br/>
@@ -15,10 +18,13 @@ $this->breadcrumbs=array(
 опыт: <?php echo Yii::app()->user->getExpo(); ?><br/>
 фраги: <?php echo Yii::app()->user->getFrag(); ?><br/>
 общее время игры: <?php echo Yii::app()->user->getTotalTime(); ?><br/>
-деньги: <?php echo Yii::app()->user->getCash(); ?><br/>
+деньги: <b><?php echo Yii::app()->user->getCash(); ?></b><br/>
 <p/>
 <h3>Оружие:</h3>
-<?php foreach (Yii::app()->user->getArms() as $arms):?>
-    <?php echo $arms->arms->name;?><br/>
+<?php foreach (Yii::app()->user->getArms() as $userArms):?>
+    <?php echo $userArms->arms->name;?>
+        <a href="/profile/sellarms/<?=$userArms->id;?>">[продать]</a>
+        <i>(за $<?=$userArms->getPriceWithTax()?>)</i>
+    <br/>
 <?php endforeach; ?>
 

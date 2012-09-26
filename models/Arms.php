@@ -42,7 +42,7 @@ class Arms extends CActiveRecord
 		return array(
 			array('type_id, name', 'required'),
 			array('type_id', 'numerical', 'integerOnly'=>true),
-			array('name', 'length', 'max'=>128),
+			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, type_id, name', 'safe', 'on'=>'search'),

@@ -32,7 +32,7 @@
                 array('label'=>'Profile', 'url'=>array('/profile/index'), 'visible'=>!Yii::app()->user->isGuest),
 				array('label'=>'Home', 'url'=>array('/site/index')),
 				array('label'=>'Zone', 'url'=>array('/site/zone')),
-				array('label'=>'Contact', 'url'=>array('/site/contact')),
+                array('label'=>'Market', 'url'=>array('/market/index'), 'visible'=>!Yii::app()->user->isGuest),
 				array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
                 array('label'=>'Registration', 'url'=>array('/site/registration'), 'visible'=>Yii::app()->user->isGuest),
 				array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest),

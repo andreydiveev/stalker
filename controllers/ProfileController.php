@@ -10,11 +10,28 @@ class ProfileController extends Controller
         ));
 	}
 
+    public function actionSellArms(){
+        $id = Yii::app()->request->getParam('id');
+
+        $model = UserArms::model()->findByPk($id);
+
+        if($model === null){
+            $msg = '<b>Item not found</b>';
+            Yii::app()->user->setFlash('msg', $msg);
+            $this->redirect('/profile');
+            Yii::app()->end();
+        }
+
+        Yii::app()->user->sell($model->id);
+        $this->redirect('/profile');
+
+    }
 
     public function filters()
     {
         return array(
             'AccessControl + index',
+            'CheckId + SellArms',
         );
     }
 
@@ -28,5 +45,13 @@ class ProfileController extends Controller
             $this->redirect('/site/login');
         }
     }
-	// Uncomment the following methods and override them if needed
+
+
+    public function filterCheckId($filterChain){
+        if($id = Yii::app()->request->getParam('id')){
+            $filterChain->run();
+        }else{
+            throw new CHttpException(404,'Товар не найден');
+        }
+    }
 }

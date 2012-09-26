@@ -5,9 +5,10 @@
  *
  * The followings are the available columns in table 'equipment':
  * @property integer $id
- * @property string $name
+ * @property integer $type_id
  *
  * The followings are the available model relations:
+ * @property EquipmentType $type
  * @property UserEquipment[] $userEquipments
  */
 class Equipment extends CActiveRecord
@@ -38,11 +39,11 @@ class Equipment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name', 'required'),
-			array('name', 'length', 'max'=>128),
+			array('type_id', 'required'),
+			array('type_id', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name', 'safe', 'on'=>'search'),
+			array('id, type_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -54,7 +55,8 @@ class Equipment extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'euipment_id'),
+			'type' => array(self::BELONGS_TO, 'EquipmentType', 'type_id'),
+			'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'equipment_id'),
 		);
 	}
 
@@ -65,7 +67,7 @@ class Equipment extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'name' => 'Name',
+			'type_id' => 'Type',
 		);
 	}
 
@@ -81,7 +83,7 @@ class Equipment extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('name',$this->name,true);
+		$criteria->compare('type_id',$this->type_id);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
