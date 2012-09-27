@@ -157,6 +157,8 @@ class SiteController extends Controller
 
     public function actionRegistration()
     {
+
+        var_dump($_POST);
         // тут думаю все понятно
         $form = new User();
 

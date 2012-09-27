@@ -2,6 +2,8 @@
 return array(
     'name'=>'Diveev Environment',
 
+    //'onBeginRequest' => array('SessionHelper', 'initSession'),
+
     'components'=>array(
         'user'=>array(
             // enable cookie-based authentication
@@ -14,5 +16,35 @@ return array(
               'password' => '757228',
               'charset' => 'utf8',
         ),
+
+        'urlManager'=>array(
+            'urlFormat'=>'path',
+            'showScriptName'=>false,
+            'rules'=>array(
+                'bot/svalka.php' => 'bot/svalka',
+                'bot/zona.php' => 'bot/svalka',
+                'bot/reg.php' => 'bot/svalka',
+                'bot/index.php' => 'bot/svalka',
+                'bot/agroprom.php' => 'bot/svalka',
+
+                '<controller:\w+>/<id:\d+>'=>'<controller>/view',
+                '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
+                '<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+            ),
+        ),
+        /*'components' => array(
+            'session' => array(
+                'cookieMode' => 'allow',
+                'cookieParams' => array(
+                    'domain' => 'site.ru',
+                    'httponly' => true,
+                ),
+            ),
+        ),*/
+
+        /*'CURL' =>array(
+            'class' => 'application.extensions.gCurl.gCurl.class',
+            //you can setup timeout,http_login,proxy,proxylogin,cookie, and setOPTIONS
+        ),*/
     ),
 );
