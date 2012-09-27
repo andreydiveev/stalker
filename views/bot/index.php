@@ -64,7 +64,7 @@ $r = '';
 <script language="JavaScript" type="text/javascript">
 
     function GoNah(){
-      location="http://stalker.local/bot/index";
+      location="/bot/index";
     }
     setTimeout( 'GoNah()', 5000 );
 
