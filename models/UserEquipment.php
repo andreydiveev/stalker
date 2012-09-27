@@ -9,6 +9,7 @@
  * @property integer $slot_id
  * @property integer $equipment_id
  * @property integer $equipped
+ * @property integer $ext_armor
  *
  * The followings are the available model relations:
  * @property User $user
@@ -18,6 +19,7 @@
 class UserEquipment extends CActiveRecord
 {
     const TAX_PERCENT = 10;
+    const ARMOR_RATE = 10;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -45,10 +47,10 @@ class UserEquipment extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('slot_id, equipment_id', 'required'),
-			array('user_id, slot_id, equipment_id, equipped', 'numerical', 'integerOnly'=>true),
+			array('user_id, slot_id, equipment_id, equipped, ext_armor', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, user_id, slot_id, equipment_id, equipped', 'safe', 'on'=>'search'),
+			array('id, user_id, slot_id, equipment_id, equipped, ext_armor', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -77,6 +79,7 @@ class UserEquipment extends CActiveRecord
 			'slot_id' => 'Slot',
 			'equipment_id' => 'Equipment',
 			'equipped' => 'Equipped',
+			'ext_armor' => 'Ext Armor',
 		);
 	}
 
@@ -96,6 +99,7 @@ class UserEquipment extends CActiveRecord
 		$criteria->compare('slot_id',$this->slot_id);
 		$criteria->compare('equipment_id',$this->equipment_id);
 		$criteria->compare('equipped',$this->equipped);
+		$criteria->compare('ext_armor',$this->ext_armor);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -105,5 +109,28 @@ class UserEquipment extends CActiveRecord
     public function getPriceWithTax(){
         $tax = ($this->equipment->price * self::TAX_PERCENT) / 100;
         return $this->equipment->price - $tax;
+    }
+
+    public function equipmentOff(){
+
+
+        $criteria = new CDbCriteria;
+        $criteria->with = 'equipment';
+        $criteria->condition = 'user_id = :user_id AND equipment.type_id = :type_id';
+        $criteria->params = array(
+            ':user_id'=>Yii::app()->user->id,
+            ':type_id'=>$this->equipment->type_id,
+        );
+
+        $models = UserEquipment::model()->findAll($criteria);
+
+        if($models !== null){
+            foreach($models as $model){
+                $model->equipped = 0;
+                $model->save();
+            }
+        }else{
+            print('null');
+        }
     }
 }

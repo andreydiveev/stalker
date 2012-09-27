@@ -44,6 +44,7 @@ class WebUser extends CWebUser
         $user->cash = $user->cash - $sum;
         $user->save();
 
+
         return true;
     }
 
@@ -66,6 +67,14 @@ class WebUser extends CWebUser
                 $user->cash += $userArms->getPriceWithTax();
                 if(!$user->save()){
                     throw new Exception('can not get cash');
+                }else{
+                    $operation = new BankOperations();
+                    $operation->name = 'sell Arms';
+                    $operation->user_id = $user->id;
+                    $operation->value = $item;
+                    $operation->comment = $userArms->getPriceWithTax();
+                    $operation->time = time();
+                    $operation->save();
                 }
             }else{
                 throw new Exception('can not be sold.');
@@ -100,6 +109,13 @@ class WebUser extends CWebUser
                 $user->cash += $userEquipment->getPriceWithTax();
                 if(!$user->save()){
                     throw new Exception('can not get cash');
+                }else{
+                    $operation = new BankOperations();
+                    $operation->name = 'sell Equipment';
+                    $operation->user_id = $user->id;
+                    $operation->value = $item;
+                    $operation->time = time();
+                    $operation->save();
                 }
             }else{
                 throw new Exception('can not be sold.');
@@ -203,6 +219,10 @@ class WebUser extends CWebUser
         $user = $this->loadModel(Yii::app()->user->id);
 
         return $user->userEquipments;
+    }
+
+    public function getDamage(){
+        return $this->loadModel(Yii::app()->user->id)->getDamage();
     }
 
     public function getCash(){

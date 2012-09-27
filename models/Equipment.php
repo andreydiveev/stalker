@@ -6,6 +6,9 @@
  * The followings are the available columns in table 'equipment':
  * @property integer $id
  * @property integer $type_id
+ * @property string $name
+ * @property integer $price
+ * @property integer $armor
  *
  * The followings are the available model relations:
  * @property EquipmentType $type
@@ -39,11 +42,12 @@ class Equipment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('type_id', 'required'),
-			array('type_id', 'numerical', 'integerOnly'=>true),
+			array('type_id, name, price', 'required'),
+			array('type_id, price, armor', 'numerical', 'integerOnly'=>true),
+			array('name', 'length', 'max'=>128),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, type_id', 'safe', 'on'=>'search'),
+			array('id, type_id, name, price, armor', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -68,6 +72,9 @@ class Equipment extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'type_id' => 'Type',
+			'name' => 'Name',
+			'price' => 'Price',
+			'armor' => 'Armor',
 		);
 	}
 
@@ -84,6 +91,9 @@ class Equipment extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('type_id',$this->type_id);
+		$criteria->compare('name',$this->name,true);
+		$criteria->compare('price',$this->price);
+		$criteria->compare('armor',$this->armor);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

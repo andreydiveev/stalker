@@ -8,6 +8,7 @@
  * @property integer $arms_id
  * @property integer $user_id
  * @property integer $armed
+ * @property integer $ext_damage
  *
  * The followings are the available model relations:
  * @property User $user
@@ -15,6 +16,7 @@
  */
 class UserArms extends CActiveRecord
 {
+
     const TAX_PERCENT = 10;
 	/**
 	 * Returns the static model of the specified AR class.
@@ -42,11 +44,11 @@ class UserArms extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('arms_id, armed', 'required'),
-			array('arms_id, user_id, armed', 'numerical', 'integerOnly'=>true),
+			array('arms_id', 'required'),
+			array('arms_id, user_id, armed, ext_damage', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, arms_id, user_id, armed', 'safe', 'on'=>'search'),
+			array('id, arms_id, user_id, armed, ext_damage', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -73,13 +75,9 @@ class UserArms extends CActiveRecord
 			'arms_id' => 'Arms',
 			'user_id' => 'User',
 			'armed' => 'Armed',
+			'ext_damage' => 'Ext Damage',
 		);
 	}
-
-    public function getPriceWithTax(){
-        $tax = ($this->arms->price * self::TAX_PERCENT) / 100;
-        return $this->arms->price - $tax;
-    }
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.
@@ -96,9 +94,39 @@ class UserArms extends CActiveRecord
 		$criteria->compare('arms_id',$this->arms_id);
 		$criteria->compare('user_id',$this->user_id);
 		$criteria->compare('armed',$this->armed);
+		$criteria->compare('ext_damage',$this->ext_damage);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
+
+
+    public function getPriceWithTax(){
+        $tax = ($this->arms->price * self::TAX_PERCENT) / 100;
+        return $this->arms->price - $tax;
+    }
+
+    public function armsOff(){
+
+
+        $criteria = new CDbCriteria;
+        $criteria->with = 'arms';
+        $criteria->condition = 'user_id = :user_id AND arms.type_id = :type_id';
+        $criteria->params = array(
+            ':user_id'=>Yii::app()->user->id,
+            ':type_id'=>$this->arms->type_id,
+        );
+
+        $model = UserArms::model()->findAll($criteria);
+
+        if($model !== null){
+            foreach($model as $userArms){
+                $userArms->armed = 0;
+                $userArms->save();
+            }
+        }else{
+            print('null');
+        }
+    }
 }

@@ -34,9 +34,9 @@ $this->breadcrumbs=array(
     <?php echo $userArms->arms->name;?>
 
     <?php if($userArms->armed == 1): ?>
-        <a href="/profile/takeoffarms/<?=$userArms->id;?>">[в рюкзак]</a>
+        <b><a href="/profile/takeoffarms/<?=$userArms->id;?>">[в рюкзак]</a></b>
     <?php else:?>
-        <a href="/profile/wear/<?=$userArms->id;?>">[надеть]</a>
+        <a href="/profile/setarms/<?=$userArms->id;?>">[надеть]</a>
     <?php endif;?>
 
     <a href="/profile/sellarms/<?=$userArms->id;?>">[продать]</a>
@@ -47,8 +47,15 @@ $this->breadcrumbs=array(
 <p/>
 <h3>Снаряжение:</h3>
 <?php foreach (Yii::app()->user->getEquipments() as $userEquipment):?>
-<?php echo $userEquipment->equipment->name;?>
-<a href="/profile/sellequipment/<?=$userEquipment->id;?>">[продать]</a>
-<i>(за $<?=$userEquipment->getPriceWithTax()?>)</i>
-<br/>
+    <?php echo $userEquipment->equipment->name;?>
+
+    <?php if($userEquipment->equipped == 1): ?>
+        <b><a href="/profile/takeoffequipment/<?=$userEquipment->id;?>">[в рюкзак]</a></b>
+        <?php else:?>
+        <a href="/profile/setequipment/<?=$userEquipment->id;?>">[надеть]</a>
+    <?php endif;?>
+
+    <a href="/profile/sellequipment/<?=$userEquipment->id;?>">[продать]</a>
+    <i>(за $<?=$userEquipment->getPriceWithTax()?>)</i>
+    <br/>
 <?php endforeach; ?>
