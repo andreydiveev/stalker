@@ -7,7 +7,6 @@
 Yii::setPathOfAlias('Zend',Yii::getPathOfAlias('application.vendors.zf2.library.Zend.*'));
 
 
-
 // login
 
 $client = new Zend\Http\Client();
@@ -32,31 +31,36 @@ $client->setUri($url);
 $response_google2 = $client->send();
 
 // svalka
-$url = 'http://sta1ker.com/agroprom.php?location=agroprom6';
+$url = 'http://sta1ker.com/yantar.php?location=yantar6';
 $client->setUri($url);
 $response_google2 = $client->send();
 
 
-$url = 'http://sta1ker.com/agroprom.php?location=agroprom5';
+$url = 'http://sta1ker.com/yantar.php?location=yantar5';
+$client->setUri($url);
+$response_google2 = $client->send();
+
+$url = 'http://sta1ker.com/attack.php?rand=0&weapon=avtomat&attack=1718';
 $client->setUri($url);
 $response_google2 = $client->send();
 
 
+/*
 // attack/
-$url = 'http://sta1ker.com/attack.php?rand=0&weapon=avtomat&attack=17';
+$url = 'http://sta1ker.com/attack.php?rand=0&weapon=avtomat&attack=1719';
 $client->setOptions(array('strictredirects' => false));
 $client->setUri($url);
 $response_google2 = $client->send();
-
+*/
 
 
 
 print(Yii::app()->session['connected'].'<p/>');
 print($response_google2->getBody());
-$r = '';
+
 ?>
 
-
+<?/*
 <html>
 <head><title><?=Yii::app()->session['connected'];?></title></head>
 <body>
@@ -71,7 +75,7 @@ $r = '';
 </script>
 
 </body>
-</html>
+</html>*/?>
 
 
 

@@ -26,6 +26,7 @@ return array(
                 'bot/reg.php' => 'bot/svalka',
                 'bot/index.php' => 'bot/svalka',
                 'bot/agroprom.php' => 'bot/svalka',
+                'bot/yantar.php' => 'bot/svalka',
 
                 '<controller:\w+>/<id:\d+>'=>'<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',

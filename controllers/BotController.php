@@ -36,7 +36,7 @@ class BotController extends Controller
         }
 
 
-        sleep(37);
+        sleep(36);
         Yii::app()->session['connected'] = Yii::app()->session['connected'] + 1;
         $this->redirect('/bot/index');
     }
