@@ -60,7 +60,7 @@ print($response_google2->getBody());
 
 ?>
 
-<?/*
+
 <html>
 <head><title><?=Yii::app()->session['connected'];?></title></head>
 <body>
@@ -75,7 +75,7 @@ print($response_google2->getBody());
 </script>
 
 </body>
-</html>*/?>
+</html>
 
 
 
