@@ -144,6 +144,9 @@ class MarketController extends Controller
                 }
 
                 if(!$user_arms->save()){
+                    /**
+                     * @TODO Secure
+                     */
                     print_r($user_arms->getErrors());exit;
                     throw new Exception('can\'t buy');
                 }
@@ -168,6 +171,47 @@ class MarketController extends Controller
 
         if($model == null){
             throw new CHttpException(404,'Товар не найден');
+        }
+
+        if(Yii::app()->user->getCash() < $model->price){
+            $diff = Yii::app()->user->getCash() - $model->price;
+            Yii::app()->user->setFlash('msg', 'Not enough cash. Need <b>$'.abs($diff).'</b>');
+            $this->redirect('/market/equipment/'.$id);
+        }else{
+
+            $user_equipment = new UserEquipment();
+            $user_equipment->user_id = Yii::app()->user->id;
+            $user_equipment->equipment_id = $model->id;
+            $user_equipment->slot_id = $model->type->slot_id;
+
+
+
+            $transaction=$user_equipment->dbConnection->beginTransaction();
+            try
+            {
+                if(!Yii::app()->user->purchase($model->price)){
+                    throw new Exception('not enough cash');
+                }
+
+                if(!$user_equipment->save()){
+                    /**
+                     * @TODO Secure
+                     */
+                    print_r($user_equipment->getErrors());exit;
+                    throw new Exception('can\'t buy');
+                }
+
+                $transaction->commit();
+                $msg = 'You have successfully purchased <i>'.$model->name.'</i> <b>-$'.$model->price.'</b>';
+            }
+            catch(Exception $e)
+            {
+                $transaction->rollback();
+                $msg = $e->getMessage();
+            }
+
+            Yii::app()->user->setFlash('msg', $msg);
+            $this->redirect('/market/equipment/'.$id);
         }
     }
 

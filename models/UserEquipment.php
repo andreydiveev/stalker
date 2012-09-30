@@ -8,14 +8,16 @@
  * @property integer $user_id
  * @property integer $slot_id
  * @property integer $equipment_id
+ * @property integer $equipped
  *
  * The followings are the available model relations:
- * @property Equipment $equipment
  * @property User $user
  * @property UserSlot $slot
+ * @property Equipment $equipment
  */
 class UserEquipment extends CActiveRecord
 {
+    const TAX_PERCENT = 10;
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -42,11 +44,11 @@ class UserEquipment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, slot_id, equipment_id', 'required'),
-			array('user_id, slot_id, equipment_id', 'numerical', 'integerOnly'=>true),
+			array('slot_id, equipment_id', 'required'),
+			array('user_id, slot_id, equipment_id, equipped', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, user_id, slot_id, equipment_id', 'safe', 'on'=>'search'),
+			array('id, user_id, slot_id, equipment_id, equipped', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,9 +60,9 @@ class UserEquipment extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'equipment' => array(self::BELONGS_TO, 'Equipment', 'equipment_id'),
 			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
 			'slot' => array(self::BELONGS_TO, 'UserSlot', 'slot_id'),
+			'equipment' => array(self::BELONGS_TO, 'Equipment', 'equipment_id'),
 		);
 	}
 
@@ -74,6 +76,7 @@ class UserEquipment extends CActiveRecord
 			'user_id' => 'User',
 			'slot_id' => 'Slot',
 			'equipment_id' => 'Equipment',
+			'equipped' => 'Equipped',
 		);
 	}
 
@@ -92,9 +95,15 @@ class UserEquipment extends CActiveRecord
 		$criteria->compare('user_id',$this->user_id);
 		$criteria->compare('slot_id',$this->slot_id);
 		$criteria->compare('equipment_id',$this->equipment_id);
+		$criteria->compare('equipped',$this->equipped);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
+
+    public function getPriceWithTax(){
+        $tax = ($this->equipment->price * self::TAX_PERCENT) / 100;
+        return $this->equipment->price - $tax;
+    }
 }

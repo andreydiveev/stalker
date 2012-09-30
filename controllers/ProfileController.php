@@ -22,7 +22,24 @@ class ProfileController extends Controller
             Yii::app()->end();
         }
 
-        Yii::app()->user->sell($model->id);
+        Yii::app()->user->sellArms($model->id);
+        $this->redirect('/profile');
+
+    }
+
+    public function actionSellEquipment(){
+        $id = Yii::app()->request->getParam('id');
+
+        $model = UserEquipment::model()->findByPk($id);
+
+        if($model === null){
+            $msg = '<b>Item not found</b>';
+            Yii::app()->user->setFlash('msg', $msg);
+            $this->redirect('/profile');
+            Yii::app()->end();
+        }
+
+        Yii::app()->user->sellEquipment($model->id);
         $this->redirect('/profile');
 
     }
@@ -31,7 +48,7 @@ class ProfileController extends Controller
     {
         return array(
             'AccessControl + index',
-            'CheckId + SellArms',
+            'CheckId + SellArms, SellEquipment',
         );
     }
 

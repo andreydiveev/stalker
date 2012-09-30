@@ -47,7 +47,7 @@ class WebUser extends CWebUser
         return true;
     }
 
-    public function sell($item){
+    public function sellArms($item){
         $user = $this->loadModel(Yii::app()->user->id);
         $transaction = $user->dbConnection->beginTransaction();
         try
@@ -64,6 +64,40 @@ class WebUser extends CWebUser
             $userArms->user_id = null;
             if($userArms->save()){
                 $user->cash += $userArms->getPriceWithTax();
+                if(!$user->save()){
+                    throw new Exception('can not get cash');
+                }
+            }else{
+                throw new Exception('can not be sold.');
+            }
+
+            $transaction->commit();
+        }
+        catch(Exception $e)
+        {
+            $transaction->rollback();
+            Yii::app()->user->setFlash('msg',$e->getMessage());
+            $msg = '';
+        }
+    }
+
+    public function sellEquipment($item){
+        $user = $this->loadModel(Yii::app()->user->id);
+        $transaction = $user->dbConnection->beginTransaction();
+        try
+        {
+            $userEquipment = UserEquipment::model()->findByPk($item, 'user_id=:current_user', array(':current_user'=>$user->id));
+            if($userEquipment === null){
+                throw new Exception('item not found');
+            }
+
+            if($userEquipment->user_id != $user->id){
+                throw new Exception('can not be sold. Not yours');
+            }
+
+            $userEquipment->user_id = null;
+            if($userEquipment->save()){
+                $user->cash += $userEquipment->getPriceWithTax();
                 if(!$user->save()){
                     throw new Exception('can not get cash');
                 }

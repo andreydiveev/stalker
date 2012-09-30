@@ -20,6 +20,8 @@ $this->breadcrumbs=array(
 общее время игры: <?php echo Yii::app()->user->getTotalTime(); ?><br/>
 деньги: <b><?php echo Yii::app()->user->getCash(); ?></b><br/>
 <p/>
+
+
 <h3>Оружие:</h3>
 <?php foreach (Yii::app()->user->getArms() as $userArms):?>
     <?php echo $userArms->arms->name;?>
@@ -28,3 +30,11 @@ $this->breadcrumbs=array(
     <br/>
 <?php endforeach; ?>
 
+<p/>
+<h3>Снаряжение:</h3>
+<?php foreach (Yii::app()->user->getEquipments() as $userEquipment):?>
+<?php echo $userEquipment->equipment->name;?>
+<a href="/profile/sellequipment/<?=$userEquipment->id;?>">[продать]</a>
+<i>(за $<?=$userEquipment->getPriceWithTax()?>)</i>
+<br/>
+<?php endforeach; ?>
