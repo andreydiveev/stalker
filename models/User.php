@@ -16,6 +16,13 @@
  * @property integer $expo
  * @property integer $level
  * @property integer $current_hp
+ * @property integer $current_area
+ * @property integer $cash
+ * @property integer $alive
+ *
+ * The followings are the available model relations:
+ * @property UserArms[] $userArms
+ * @property UserEquipment[] $userEquipments
  */
 class User extends CActiveRecord
 {
@@ -40,23 +47,23 @@ class User extends CActiveRecord
 	/**
 	 * @return array validation rules for model attributes.
 	 */
-	public function rules()
-	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('email, password, password2, nick, reg_date', 'required', 'on'=>'registration'),
+    public function rules()
+    {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('email, password, password2, nick, reg_date', 'required', 'on'=>'registration'),
             array('email, password', 'required', 'on'=>'login'),
-			array('reg_date, last_activity, total_time, frag, squad, expo, level, current_hp', 'numerical', 'integerOnly'=>true),
+            array('reg_date, last_activity, total_time, frag, squad, expo, level, current_hp, cash, alive, current_area', 'numerical', 'integerOnly'=>true),
             array('email', 'email','checkMX'=>false),
-			array('password', 'length', 'max'=>128),
+            array('password', 'length', 'max'=>128),
             array('password', 'length', 'min'=>6),
-			array('nick', 'length', 'max'=>20),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('id, email, password, nick, reg_date, last_activity, total_time, frag, squad, expo, level, current_hp', 'safe', 'on'=>'search'),
-		);
-	}
+            array('nick', 'length', 'max'=>20),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, email, password, nick, reg_date, last_activity, total_time, frag, squad, expo, level, current_hp, current_area, cash, alive', 'safe', 'on'=>'search'),
+        );
+    }
 
 	/**
 	 * @return array relational rules.
@@ -65,10 +72,10 @@ class User extends CActiveRecord
 	{
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
-        return array(
-            'arms' => array(self::HAS_MANY, 'UserArms', 'user_id'),
-            'equipments' => array(self::HAS_MANY, 'UserEquipment', 'user_id'),
-        );
+		return array(
+			'userArms' => array(self::HAS_MANY, 'UserArms', 'user_id'),
+			'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'user_id'),
+		);
 	}
 
 	/**
@@ -89,7 +96,9 @@ class User extends CActiveRecord
 			'expo' => 'Expo',
 			'level' => 'Level',
 			'current_hp' => 'Current Hp',
-            'current_area' => 'Current Area',
+			'current_area' => 'Current Area',
+			'cash' => 'Cash',
+			'alive' => 'Alive',
 		);
 	}
 
@@ -116,10 +125,17 @@ class User extends CActiveRecord
 		$criteria->compare('expo',$this->expo);
 		$criteria->compare('level',$this->level);
 		$criteria->compare('current_hp',$this->current_hp);
-        $criteria->compare('current_area',$this->current_area);
+		$criteria->compare('current_area',$this->current_area);
+		$criteria->compare('cash',$this->cash);
+		$criteria->compare('alive',$this->alive);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
+
+    public function kill(){
+        $this->alive = 0;
+        $this->save();
+    }
 }

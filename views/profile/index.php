@@ -11,6 +11,13 @@ $this->breadcrumbs=array(
     <?php echo Yii::app()->user->getFlash('msg');?><p/><p/>
 <?php endif;?>
 
+<?php if(Yii::app()->user->checkAlive() == 1): ?>
+    жив <p/><p/>
+<?php else:?>
+    мертв
+    <a href="/profile/rise">[восстановиться]</a><p/><p/>
+<?php endif;?>
+
 дата регистрации: <?php echo Yii::app()->user->getRegDate(); ?><br/>
 отряд: <?php echo Yii::app()->user->getSquad(); ?><br/>
 уровень: <?php echo Yii::app()->user->getLevel(); ?><br/>
@@ -25,8 +32,15 @@ $this->breadcrumbs=array(
 <h3>Оружие:</h3>
 <?php foreach (Yii::app()->user->getArms() as $userArms):?>
     <?php echo $userArms->arms->name;?>
-        <a href="/profile/sellarms/<?=$userArms->id;?>">[продать]</a>
-        <i>(за $<?=$userArms->getPriceWithTax()?>)</i>
+
+    <?php if($userArms->armed == 1): ?>
+        <a href="/profile/takeoffarms/<?=$userArms->id;?>">[в рюкзак]</a>
+    <?php else:?>
+        <a href="/profile/wear/<?=$userArms->id;?>">[надеть]</a>
+    <?php endif;?>
+
+    <a href="/profile/sellarms/<?=$userArms->id;?>">[продать]</a>
+    <i>(за $<?=$userArms->getPriceWithTax()?>)</i>
     <br/>
 <?php endforeach; ?>
 

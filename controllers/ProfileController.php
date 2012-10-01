@@ -44,11 +44,37 @@ class ProfileController extends Controller
 
     }
 
+    public function actionTakeOffArms(){
+        $id = Yii::app()->request->getParam('id');
+
+        $model  = UserArms::model()->find("id = :id AND user_id = :user_id", array(":id"=>$id, ":user_id"=>Yii::app()->user->id ));
+        if($model === null){
+            throw new CHttpException(404,'Товар не найден');
+        }
+
+        $model->armed = 0;
+        $model->save();/** @TODO Check saving*/
+        $this->redirect('/profile');
+    }
+
+    public function actionWear(){
+        $id = Yii::app()->request->getParam('id');
+
+        $model  = UserArms::model()->find("id = :id AND user_id = :user_id", array(":id"=>$id, ":user_id"=>Yii::app()->user->id ));
+        if($model === null){
+            throw new CHttpException(404,'Товар не найден');
+        }
+
+        $model->armed = 1;
+        $model->save();/** @TODO Check saving*/
+        $this->redirect('/profile');
+    }
+
     public function filters()
     {
         return array(
             'AccessControl + index',
-            'CheckId + SellArms, SellEquipment',
+            'CheckId + SellArms, SellEquipment, TakeOffArms',
         );
     }
 
@@ -70,5 +96,10 @@ class ProfileController extends Controller
         }else{
             throw new CHttpException(404,'Товар не найден');
         }
+    }
+
+    public function actionRise(){
+         Yii::app()->user->rise();
+         $this->redirect( Yii::app()->request->urlReferrer);
     }
 }

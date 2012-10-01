@@ -192,7 +192,7 @@ class WebUser extends CWebUser
 
         $user = $this->loadModel(Yii::app()->user->id);
 
-        return $user->arms;
+        return $user->userArms;
     }
 
     public function getEquipments(){
@@ -202,30 +202,43 @@ class WebUser extends CWebUser
 
         $user = $this->loadModel(Yii::app()->user->id);
 
-        return $user->equipments;
+        return $user->userEquipments;
     }
 
     public function getCash(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->cash;
+        return $this->loadModel(Yii::app()->user->id)->cash;
     }
+
     /**
      * @param $id
      * @return User
      * @throws CHttpException
      */
-    protected function loadModel($id)
-    {
+    protected function loadModel($id){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
         $model = User::model()->findByPk((int)$id);
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
         }
         return $model;
     }
+
+    public function rise(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $user = $this->loadModel(Yii::app()->user->id);
+        $user->alive = 1;
+        $user->save();
+    }
+
+    public function  checkAlive(){
+        return $this->loadModel(Yii::app()->user->id)->alive;
+    }
+
 
 }
