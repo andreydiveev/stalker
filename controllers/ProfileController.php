@@ -4,9 +4,12 @@ class ProfileController extends Controller
 {
 	public function actionIndex()
 	{
-
 		$this->render('index');
 	}
+
+    public function actionPublic(){
+        $this->render('external');
+    }
 
     public function actionSellArms(){
         $id = Yii::app()->request->getParam('id');

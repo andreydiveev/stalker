@@ -40,12 +40,16 @@ class FightController extends Controller
 
         if($opponent === null){
             throw new CHttpException(404,'Игрок не найден');
+        }elseif($opponent->alive == 0){
+            throw new CHttpException(404,'Игрок мертв');
         }
 
         $damage = Yii::app()->user->getDamage();
         $opponent->hit($damage);
 
-        $opponent->save(); /** @TODO SET KILL TIME,CHECK SAVING */
+        if(!$opponent->save()){
+            print_r($opponent->getErrors());exit;
+        }
         $this->redirect( Yii::app()->request->urlReferrer);
     }
 

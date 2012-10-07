@@ -253,6 +253,15 @@ class WebUser extends CWebUser
 
         $user = $this->loadModel(Yii::app()->user->id);
         $user->alive = 1;
+
+        $level = Levels::model()->find('level = :user_level', array(':user_level'=>$user->level));
+
+        if($level === null){
+            throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
+        $user->current_hp = $level->hp;
+
         $user->save();
     }
 

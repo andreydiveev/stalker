@@ -54,14 +54,14 @@ class User extends CActiveRecord
         return array(
             array('email, password, password2, nick, reg_date', 'required', 'on'=>'registration'),
             array('email, password', 'required', 'on'=>'login'),
-            array('reg_date, last_activity, total_time, frag, squad, expo, level, current_hp, cash, alive, current_area', 'numerical', 'integerOnly'=>true),
+            array('reg_date, last_activity, last_struck, total_time, frag, squad, expo, level, current_hp, cash, alive, current_area', 'numerical', 'integerOnly'=>true),
             array('email', 'email','checkMX'=>false),
             array('password', 'length', 'max'=>128),
             array('password', 'length', 'min'=>6),
             array('nick', 'length', 'max'=>20),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, email, password, nick, reg_date, last_activity, total_time, frag, squad, expo, level, current_hp, current_area, cash, alive', 'safe', 'on'=>'search'),
+            array('id, email, password, nick, reg_date, last_activity, last_struck, total_time, frag, squad, expo, level, current_hp, current_area, cash, alive', 'safe', 'on'=>'search'),
         );
     }
 
@@ -75,6 +75,7 @@ class User extends CActiveRecord
 		return array(
 			'userArms' => array(self::HAS_MANY, 'UserArms', 'user_id'),
 			'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'user_id'),
+            'userLogs' => array(self::HAS_MANY, 'UserLog', 'user_id'),
 		);
 	}
 
@@ -90,6 +91,7 @@ class User extends CActiveRecord
 			'nick' => 'Nick',
 			'reg_date' => 'Reg Date',
 			'last_activity' => 'Last Activity',
+            'last_struck' => 'Last Struck',
 			'total_time' => 'Total Time',
 			'frag' => 'Frag',
 			'squad' => 'Squad',
@@ -119,6 +121,7 @@ class User extends CActiveRecord
 		$criteria->compare('nick',$this->nick,true);
 		$criteria->compare('reg_date',$this->reg_date);
 		$criteria->compare('last_activity',$this->last_activity);
+        $criteria->compare('last_struck',$this->last_struck);
 		$criteria->compare('total_time',$this->total_time);
 		$criteria->compare('frag',$this->frag);
 		$criteria->compare('squad',$this->squad);
@@ -136,11 +139,19 @@ class User extends CActiveRecord
 
     public function kill(){
         $this->alive = 0;
-        $this->save();
+    }
+
+    public function refreshHp(){
+
     }
 
     public function hit($damage){
-        $this->current_hp = ($this->getArmor() / UserEquipment::ARMOR_RATE) + $this->current_hp - $damage;
+
+        $this->current_hp = ($this->current_hp + ceil($this->getArmor() / UserEquipment::ARMOR_RATE)) - $damage;
+
+        if($this->current_hp <= 0){
+            $this->kill();
+        }
     }
 
     public function getDamage(){

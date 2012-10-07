@@ -12,16 +12,17 @@ $this->breadcrumbs=array(
 <?php endif;?>
 
 <?php if(Yii::app()->user->checkAlive() == 1): ?>
-    жив <p/><p/>
+    <span style="color:green;font-weight:bold;">жив</span>
+    <p/><p/>
 <?php else:?>
-    мертв
+    <span style="color:red;font-weight:bold;">мертв</span>
     <a href="/profile/rise">[восстановиться]</a><p/><p/>
 <?php endif;?>
 
+здоровье: <?php echo Yii::app()->user->getCurrentHp(); ?> / <?php echo Yii::app()->user->getCurrentHp(); ?><br/>
 дата регистрации: <?php echo Yii::app()->user->getRegDate(); ?><br/>
 отряд: <?php echo Yii::app()->user->getSquad(); ?><br/>
 уровень: <?php echo Yii::app()->user->getLevel(); ?><br/>
-текущее здоровье :<?php echo Yii::app()->user->getCurrentHp(); ?><br/>
 опыт: <?php echo Yii::app()->user->getExpo(); ?><br/>
 фраги: <?php echo Yii::app()->user->getFrag(); ?><br/>
 общее время игры: <?php echo Yii::app()->user->getTotalTime(); ?><br/>
