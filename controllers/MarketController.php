@@ -141,6 +141,14 @@ class MarketController extends Controller
             {
                 if(!Yii::app()->user->purchase($model->price)){
                     throw new Exception('not enough cash');
+                }else{
+                    $operation = new BankOperations();
+                    $operation->name = 'purchase Arms';
+                    $operation->user_id = Yii::app()->user->id;
+                    $operation->value = $model->id;
+                    $operation->comment = $model->price;
+                    $operation->time = time();
+                    $operation->save();
                 }
 
                 if(!$user_arms->save()){
@@ -191,6 +199,14 @@ class MarketController extends Controller
             {
                 if(!Yii::app()->user->purchase($model->price)){
                     throw new Exception('not enough cash');
+                }else{
+                    $operation = new BankOperations();
+                    $operation->name = 'purchase Equipment';
+                    $operation->user_id = Yii::app()->user->id;
+                    $operation->value = $model->id;
+                    $operation->comment = $model->price;
+                    $operation->time = time();
+                    $operation->save();
                 }
 
                 if(!$user_equipment->save()){

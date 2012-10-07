@@ -138,4 +138,38 @@ class User extends CActiveRecord
         $this->alive = 0;
         $this->save();
     }
+
+    public function hit($damage){
+        $this->current_hp = ($this->getArmor() / UserEquipment::ARMOR_RATE) + $this->current_hp - $damage;
+    }
+
+    public function getDamage(){
+        $current_arms = $this->userArms(array('condition'=>'armed = 1'));
+
+        if($current_arms !== null){
+            $damage = 0;
+            foreach($current_arms as $userArms){
+                $damage += $userArms->arms->damage + $userArms->ext_damage;
+            }
+        }else{
+            throw new CHttpException(500,'getDamage');
+        }
+
+        return $damage;
+    }
+
+    public function getArmor(){
+        $current_equipment = $this->userEquipments(array('condition'=>'equipped = 1'));
+
+        if($current_equipment !== null){
+            $armor = 0;
+            foreach($current_equipment as $userEquipments){
+                $armor += $userEquipments->equipment->armor + $userEquipments->ext_armor;
+            }
+        }else{
+            throw new CHttpException(500,'getDamage');
+        }
+
+        return $armor;
+    }
 }

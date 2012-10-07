@@ -5,9 +5,7 @@ class ProfileController extends Controller
 	public function actionIndex()
 	{
 
-		$this->render('index', array(
-            "userArms" => User::model()
-        ));
+		$this->render('index');
 	}
 
     public function actionSellArms(){
@@ -57,7 +55,20 @@ class ProfileController extends Controller
         $this->redirect('/profile');
     }
 
-    public function actionWear(){
+    public function actionTakeOffEquipment(){
+        $id = Yii::app()->request->getParam('id');
+
+        $model  = UserEquipment::model()->find("id = :id AND user_id = :user_id", array(":id"=>$id, ":user_id"=>Yii::app()->user->id ));
+        if($model === null){
+            throw new CHttpException(404,'Товар не найден');
+        }
+
+        $model->equipped = 0;
+        $model->save();/** @TODO Check saving*/
+        $this->redirect('/profile');
+    }
+
+    public function actionSetArms(){
         $id = Yii::app()->request->getParam('id');
 
         $model  = UserArms::model()->find("id = :id AND user_id = :user_id", array(":id"=>$id, ":user_id"=>Yii::app()->user->id ));
@@ -65,7 +76,22 @@ class ProfileController extends Controller
             throw new CHttpException(404,'Товар не найден');
         }
 
+        $model->armsOff();
         $model->armed = 1;
+        $model->save();/** @TODO Check saving*/
+        $this->redirect('/profile');
+    }
+
+    public function actionSetEquipment(){
+        $id = Yii::app()->request->getParam('id');
+
+        $model  = UserEquipment::model()->find("id = :id AND user_id = :user_id", array(":id"=>$id, ":user_id"=>Yii::app()->user->id ));
+        if($model === null){
+            throw new CHttpException(404,'Товар не найден');
+        }
+
+        $model->equipmentOff();
+        $model->equipped = 1;
         $model->save();/** @TODO Check saving*/
         $this->redirect('/profile');
     }

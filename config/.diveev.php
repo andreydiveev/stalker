@@ -13,6 +13,17 @@ return array(
               'username' => 'root',
               'password' => '757228',
               'charset' => 'utf8',
+              'enableProfiling' => true,
+        ),
+        'log'=>array(
+            'class'=>'CLogRouter',
+            'routes'=>array(
+                array(
+                    'class'=>'CProfileLogRoute',
+                    'levels'=>'profile',
+                    'enabled'=>false,
+                ),
+            ),
         ),
     ),
 );
