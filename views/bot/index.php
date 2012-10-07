@@ -119,6 +119,10 @@ switch($lvl){
         $client->setUri($url);
         $response_google2 = $client->send();
 
+        // svalka
+        $url = 'http://sta1ker.com/attack.php?attack=bp';
+        $client->setUri($url);
+        $response_google2 = $client->send();
 
         $url = 'http://sta1ker.com/yantar.php?location=yantar5';
         $client->setUri($url);
@@ -132,7 +136,34 @@ switch($lvl){
     }
 
     default:{
-        print('default'.Yii::app()->session['lvl']);exit;
+        // main
+
+        $url = 'http://sta1ker.com/';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+        // zona
+        $url = 'http://sta1ker.com/zona.php';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+        // svalka
+        $url = 'http://sta1ker.com/yantar.php?location=yantar6';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+        // svalka
+        $url = 'http://sta1ker.com/attack.php?attack=bp';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+
+        $url = 'http://sta1ker.com/yantar.php?location=yantar5';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+        $url = 'http://sta1ker.com/attack.php?rand=0&weapon=avtomat&attack=1718';
+        $client->setUri($url);
+        $response_google2 = $client->send();
     }
 
 
