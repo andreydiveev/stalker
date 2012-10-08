@@ -21,11 +21,14 @@ return array(
             'urlFormat'=>'path',
             'showScriptName'=>false,
             'rules'=>array(
+                'bot/kordon.php' => 'bot/svalka',
+                'bot/base.php' => 'bot/svalka',
                 'bot/svalka.php' => 'bot/svalka',
                 'bot/zona.php' => 'bot/svalka',
                 'bot/reg.php' => 'bot/svalka',
                 'bot/index.php' => 'bot/svalka',
                 'bot/agroprom.php' => 'bot/svalka',
+                'bot/yantar.php' => 'bot/svalka',
 
                 '<controller:\w+>/<id:\d+>'=>'<controller>/view',
                 '<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
