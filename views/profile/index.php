@@ -20,7 +20,8 @@ $this->breadcrumbs=array(
 <?php endif;?>
 
 здоровье: <?php echo Yii::app()->user->getCurrentHp(); ?> / <?php echo Yii::app()->user->getCurrentHp(); ?><br/>
-дата регистрации: <?php echo Yii::app()->user->getRegDate(); ?><br/>
+урон: <?php echo Yii::app()->user->getDamage(UserArms::KNIFE_TYPE_ID); ?> / <?php echo Yii::app()->user->getDamage(UserArms::PISTOL_TYPE_ID); ?>  / <?php echo Yii::app()->user->getDamage(UserArms::MACHINE_GUN_TYPE_ID); ?><br/>
+дата регистрации: <?php echo date('<b>d.m.Y</b> H:i:s', Yii::app()->user->getRegDate()); ?><br/>
 отряд: <?php echo Yii::app()->user->getSquad(); ?><br/>
 уровень: <?php echo Yii::app()->user->getLevel(); ?><br/>
 опыт: <?php echo Yii::app()->user->getExpo(); ?><br/>

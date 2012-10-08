@@ -162,13 +162,7 @@ class WebUser extends CWebUser
     }
 
     public function getCurrentHp(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->current_hp;
+        return $this->loadModel(Yii::app()->user->id)->getHp();
     }
 
     public function getExpo(){
@@ -221,8 +215,12 @@ class WebUser extends CWebUser
         return $user->userEquipments;
     }
 
-    public function getDamage(){
-        return $this->loadModel(Yii::app()->user->id)->getDamage();
+    public function getDamage($type){
+        return $this->loadModel(Yii::app()->user->id)->getDamage($type);
+    }
+
+    public function getArmed(){
+        return $this->loadModel(Yii::app()->user->id)->getArmed();
     }
 
     public function getCash(){
@@ -253,15 +251,7 @@ class WebUser extends CWebUser
 
         $user = $this->loadModel(Yii::app()->user->id);
         $user->alive = 1;
-
-        $level = Levels::model()->find('level = :user_level', array(':user_level'=>$user->level));
-
-        if($level === null){
-            throw new CHttpException(404, 'The requested page does not exist.');
-        }
-
-        $user->current_hp = $level->hp;
-
+        $user->flushHp();
         $user->save();
     }
 

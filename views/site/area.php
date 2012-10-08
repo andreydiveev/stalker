@@ -2,8 +2,15 @@
 <?php foreach($area->getAliveUsers() as $player):?>
     <?php if($player->id == Yii::app()->user->id){continue;}?>
     [<a href="/profile/public/<?=$player->id;?>"><?php echo $player->nick;?></a>]
-    <a href="/fight/attack/<?=$player->id;?>">Атаковать</a>
-    (<?=$player->current_hp+$player->getArmor()?> / <?=$player->current_hp+$player->getArmor();?>)<br/>
+
+    <? if($player->getArmed()->count > 0):?>
+        Атаковать
+        <? foreach(Yii::app()->user->getArmed()->arms as $arms):?>
+            [<a href="/fight/attack/<?=$player->id;?>?weapon_type=<?=$arms->type->id;?>"><?=$arms->type->single_name;?></a>]
+        <? endforeach;?>
+    <? endif;?>
+
+    (<?=$player->getHp()+$player->getArmor()?> / <?=$player->getHp()+$player->getArmor();?>)<br/>
 
 <?php endforeach;?>
 <br/><br/>

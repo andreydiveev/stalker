@@ -10,6 +10,8 @@
  * @property string $nick
  * @property integer $reg_date
  * @property integer $last_activity
+ * @property integer $last_beaten
+ * @property integer $last_beaten_hp
  * @property integer $total_time
  * @property integer $frag
  * @property integer $squad
@@ -26,6 +28,9 @@
  */
 class User extends CActiveRecord
 {
+
+    const HP_REGEN_SPEED_PER_SEC = 0.5;
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
@@ -54,14 +59,14 @@ class User extends CActiveRecord
         return array(
             array('email, password, password2, nick, reg_date', 'required', 'on'=>'registration'),
             array('email, password', 'required', 'on'=>'login'),
-            array('reg_date, last_activity, last_struck, total_time, frag, squad, expo, level, current_hp, cash, alive, current_area', 'numerical', 'integerOnly'=>true),
+            array('reg_date, last_activity, last_beaten, last_beaten_hp, total_time, frag, squad, expo, level, current_hp, cash, alive, current_area', 'numerical', 'integerOnly'=>true),
             array('email', 'email','checkMX'=>false),
             array('password', 'length', 'max'=>128),
             array('password', 'length', 'min'=>6),
             array('nick', 'length', 'max'=>20),
             // The following rule is used by search().
             // Please remove those attributes that should not be searched.
-            array('id, email, password, nick, reg_date, last_activity, last_struck, total_time, frag, squad, expo, level, current_hp, current_area, cash, alive', 'safe', 'on'=>'search'),
+            array('id, email, password, nick, reg_date, last_activity, last_beaten, last_beaten_hp, total_time, frag, squad, expo, level, current_hp, current_area, cash, alive', 'safe', 'on'=>'search'),
         );
     }
 
@@ -91,7 +96,8 @@ class User extends CActiveRecord
 			'nick' => 'Nick',
 			'reg_date' => 'Reg Date',
 			'last_activity' => 'Last Activity',
-            'last_struck' => 'Last Struck',
+            'last_beaten' => 'Last Beaten',
+            'last_beaten_hp' => 'Last Beaten Hp',
 			'total_time' => 'Total Time',
 			'frag' => 'Frag',
 			'squad' => 'Squad',
@@ -121,7 +127,8 @@ class User extends CActiveRecord
 		$criteria->compare('nick',$this->nick,true);
 		$criteria->compare('reg_date',$this->reg_date);
 		$criteria->compare('last_activity',$this->last_activity);
-        $criteria->compare('last_struck',$this->last_struck);
+        $criteria->compare('last_beaten',$this->last_beaten);
+        $criteria->compare('last_beaten_hp',$this->last_beaten_hp);
 		$criteria->compare('total_time',$this->total_time);
 		$criteria->compare('frag',$this->frag);
 		$criteria->compare('squad',$this->squad);
@@ -138,32 +145,81 @@ class User extends CActiveRecord
 	}
 
     public function kill(){
+
+        $result = new stdClass();
+
+        $this->last_beaten = time();/**???*/
+        $this->current_hp = 0;
         $this->alive = 0;
-    }
 
-    public function refreshHp(){
+        if($this->save()){
+            $result->killed = true;
+        }else{
+            $result->killed = false;
+        }
 
+        return $result;
     }
 
     public function hit($damage){
 
-        $this->current_hp = ($this->current_hp + ceil($this->getArmor() / UserEquipment::ARMOR_RATE)) - $damage;
+        $result = new stdClass();
+
+        $result->hp_before = $this->getHp();
+        $result->damage    = $damage;
+
+        $this->current_hp = ($this->getHp() + ceil($this->getArmor() / UserEquipment::ARMOR_RATE)) - $damage;
+        $this->last_beaten = time();
+        $this->last_beaten_hp = $this->current_hp;
+        $this->save();
 
         if($this->current_hp <= 0){
-            $this->kill();
+            if($this->kill()->killed){
+                $result->hp_after = 0;
+                $result->killed = true;
+            }else{
+                $result->hp_after = $this->getHp();
+            }
         }
+
+        return $result;
     }
 
-    public function getDamage(){
+    public function getArmed(){
+
+        $result = new stdClass();
+
         $current_arms = $this->userArms(array('condition'=>'armed = 1'));
 
         if($current_arms !== null){
-            $damage = 0;
+            $result->count = 0;
+            $result->arms = array();
             foreach($current_arms as $userArms){
-                $damage += $userArms->arms->damage + $userArms->ext_damage;
+                $arms = new stdClass();
+                $arms->id   = $userArms->arms->id;
+                $arms->name = $userArms->arms->name;
+                $arms->type = $userArms->arms->type;
+                $arms->damage = $userArms->arms->damage;
+                $arms->ext_damage = $userArms->ext_damage;
+
+                array_push($result->arms, $arms);
+                $result->count++;
             }
         }else{
             throw new CHttpException(500,'getDamage');
+        }
+
+        return $result;
+    }
+
+    public function getDamage($type){
+        $armed = $this->getArmed();
+
+        $damage = 0;
+        foreach($armed->arms as $arms){
+            if($arms->type->id == $type){
+                $damage += $arms->damage + $arms->ext_damage;
+            }
         }
 
         return $damage;
@@ -182,5 +238,40 @@ class User extends CActiveRecord
         }
 
         return $armor;
+    }
+
+    public function getHp(){
+        $this->refreshHp();
+
+        return $this->current_hp;
+    }
+
+    public function refreshHp(){
+
+        $beaten_ago = time() - $this->last_beaten;
+
+        $regen = ceil($beaten_ago * User::HP_REGEN_SPEED_PER_SEC);
+
+        if(($this->current_hp + $regen) >= $this->getLevel()->hp){
+             $this->flushHp();
+        }else{
+            $this->current_hp = $this->last_beaten_hp + $regen;
+            $this->save();
+        }
+    }
+
+    public function flushHp(){
+        $this->current_hp = $this->getLevel()->hp;
+        $this->save();
+    }
+
+    public function getLevel(){
+        $level = Levels::model()->find('level = :user_level', array(':user_level'=>$this->level));
+
+        if($level === null){
+            throw new CHttpException(404, 'The requested page does not exist. getMaxHp');
+        }
+
+        return $level;
     }
 }

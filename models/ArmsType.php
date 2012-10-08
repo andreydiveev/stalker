@@ -7,6 +7,7 @@
  * @property integer $id
  * @property integer $class_id
  * @property string $name
+ * @property string $single_name
  *
  * The followings are the available model relations:
  * @property Arms[] $arms
@@ -40,12 +41,12 @@ class ArmsType extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('class_id, name', 'required'),
+			array('class_id, name, single_name', 'required'),
 			array('class_id', 'numerical', 'integerOnly'=>true),
-			array('name', 'length', 'max'=>128),
+			array('name, single_name', 'length', 'max'=>128),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, class_id, name', 'safe', 'on'=>'search'),
+			array('id, class_id, name, single_name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -71,6 +72,7 @@ class ArmsType extends CActiveRecord
 			'id' => 'ID',
 			'class_id' => 'Class',
 			'name' => 'Name',
+			'single_name' => 'Single Name',
 		);
 	}
 
@@ -88,6 +90,7 @@ class ArmsType extends CActiveRecord
 		$criteria->compare('id',$this->id);
 		$criteria->compare('class_id',$this->class_id);
 		$criteria->compare('name',$this->name,true);
+		$criteria->compare('single_name',$this->single_name,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

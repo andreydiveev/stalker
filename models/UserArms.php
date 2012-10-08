@@ -18,6 +18,11 @@ class UserArms extends CActiveRecord
 {
 
     const TAX_PERCENT = 10;
+
+    const KNIFE_TYPE_ID = 2;
+    const PISTOL_TYPE_ID = 3;
+    const MACHINE_GUN_TYPE_ID = 4;
+
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.

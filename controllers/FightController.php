@@ -36,6 +36,20 @@ class FightController extends Controller
     public function actionAttack(){
         $id = Yii::app()->request->getParam('id');
 
+        $error = false;
+
+        if(!($weapon_type = Yii::app()->request->getParam('weapon_type'))){
+            $error = true;
+        }elseif(!is_numeric($weapon_type)){
+            $error = true;
+        }elseif(($damage = Yii::app()->user->getDamage($weapon_type)) == 0){
+            $error = true;
+        }
+
+        if($error){
+            throw new CHttpException(404,'Оружие не найдено');
+        }
+
         $opponent = $this->loadModel($id);
 
         if($opponent === null){
@@ -44,7 +58,6 @@ class FightController extends Controller
             throw new CHttpException(404,'Игрок мертв');
         }
 
-        $damage = Yii::app()->user->getDamage();
         $opponent->hit($damage);
 
         if(!$opponent->save()){
