@@ -21,6 +21,7 @@ return array(
             'urlFormat'=>'path',
             'showScriptName'=>false,
             'rules'=>array(
+                'bot/voensklad.php' => 'bot/svalka',
                 'bot/kordon.php' => 'bot/svalka',
                 'bot/base.php' => 'bot/svalka',
                 'bot/svalka.php' => 'bot/svalka',
