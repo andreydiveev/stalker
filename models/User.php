@@ -25,11 +25,16 @@
  * The followings are the available model relations:
  * @property UserArms[] $userArms
  * @property UserEquipment[] $userEquipments
+ * @property UserLog[] $userLog
  */
 class User extends CActiveRecord
 {
 
     const HP_REGEN_SPEED_PER_SEC = 0.5;
+
+    const HIT_STATUS_KILLED     = 'killed';
+    const HIT_STATUS_PENDING    = 'pending';
+    const HIT_STATUS_WOUNDED    = 'wounded';
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -80,7 +85,7 @@ class User extends CActiveRecord
 		return array(
 			'userArms' => array(self::HAS_MANY, 'UserArms', 'user_id'),
 			'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'user_id'),
-            'userLogs' => array(self::HAS_MANY, 'UserLog', 'user_id'),
+            'userLog' => array(self::HAS_MANY, 'UserLog', 'user_id'),
 		);
 	}
 
@@ -146,41 +151,61 @@ class User extends CActiveRecord
 
     public function kill(){
 
-        $result = new stdClass();
-
-        $this->last_beaten = time();/**???*/
+        $this->last_beaten = time();
         $this->current_hp = 0;
         $this->alive = 0;
 
         if($this->save()){
-            $result->killed = true;
+            $result = true;
         }else{
-            $result->killed = false;
+            $result = false;
         }
 
         return $result;
     }
 
-    public function hit($damage){
+    public function hit($weapon_type){
 
         $result = new stdClass();
+        $result->status = User::HIT_STATUS_PENDING;
+        $result->victim = $this->nick;
 
+        $damage = Yii::app()->user->getDamage($weapon_type);
+
+        if($damage->value == 0){
+            return false;
+        }elseif($damage->userArms->getShotTimeRemaining() > 0){
+            return $result;
+        }else{
+            $damage->userArms->last_shot = time();
+            $damage->userArms->save();
+        }
+
+        $result->assaulter = Yii::app()->user->nick;
         $result->hp_before = $this->getHp();
-        $result->damage    = $damage;
 
-        $this->current_hp = ($this->getHp() + ceil($this->getArmor() / UserEquipment::ARMOR_RATE)) - $damage;
+        $this->current_hp = ($this->getHp() + ceil($this->getArmor() / UserEquipment::ARMOR_RATE)) - $damage->value;
         $this->last_beaten = time();
         $this->last_beaten_hp = $this->current_hp;
         $this->save();
 
+
+
         if($this->current_hp <= 0){
-            if($this->kill()->killed){
+            if($this->kill()){
                 $result->hp_after = 0;
-                $result->killed = true;
-            }else{
-                $result->hp_after = $this->getHp();
+                $result->status = User::HIT_STATUS_KILLED;
             }
+        }else{
+            $result->status = User::HIT_STATUS_WOUNDED;
+            $result->hp_after = $this->getHp();
+            $result->damage = $result->hp_before - $result->hp_after;
         }
+
+        $user_log = new UserLog();
+        $user_log->user_id = $this->id;
+        $user_log->logDamage($result);
+        $user_log->save();
 
         return $result;
     }
@@ -193,16 +218,9 @@ class User extends CActiveRecord
 
         if($current_arms !== null){
             $result->count = 0;
-            $result->arms = array();
+            $result->userArms = array();
             foreach($current_arms as $userArms){
-                $arms = new stdClass();
-                $arms->id   = $userArms->arms->id;
-                $arms->name = $userArms->arms->name;
-                $arms->type = $userArms->arms->type;
-                $arms->damage = $userArms->arms->damage;
-                $arms->ext_damage = $userArms->ext_damage;
-
-                array_push($result->arms, $arms);
+                array_push($result->userArms, $userArms);
                 $result->count++;
             }
         }else{
@@ -213,16 +231,20 @@ class User extends CActiveRecord
     }
 
     public function getDamage($type){
+
         $armed = $this->getArmed();
 
-        $damage = 0;
-        foreach($armed->arms as $arms){
-            if($arms->type->id == $type){
-                $damage += $arms->damage + $arms->ext_damage;
+        $result = new stdClass();
+        $result->value = 0;
+
+        foreach($armed->userArms as $userArms){
+            if($userArms->arms->type_id == $type){
+                $result->userArms = $userArms;
+                $result->value += $userArms->arms->damage + $userArms->ext_damage;
             }
         }
 
-        return $damage;
+        return $result;
     }
 
     public function getArmor(){

@@ -227,6 +227,26 @@ class WebUser extends CWebUser
         return $this->loadModel(Yii::app()->user->id)->cash;
     }
 
+    public function getLog(array $params = null){
+
+        $limit = (int)$params['limit'];
+
+        return $this->loadModel($this->id)->userLog(array('limit'=>$limit, 'order'=>'id DESC'));
+    }
+
+    public function logHit($result){
+
+        if($result == User::HIT_STATUS_PENDING){
+            return false;
+        }
+
+        $user_log = new UserLog();
+        $user_log->user_id = Yii::app()->user->id;
+        $user_log->logHit($result);
+
+        return $user_log->save();
+    }
+
     /**
      * @param $id
      * @return User

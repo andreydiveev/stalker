@@ -42,8 +42,6 @@ class FightController extends Controller
             $error = true;
         }elseif(!is_numeric($weapon_type)){
             $error = true;
-        }elseif(($damage = Yii::app()->user->getDamage($weapon_type)) == 0){
-            $error = true;
         }
 
         if($error){
@@ -58,7 +56,20 @@ class FightController extends Controller
             throw new CHttpException(404,'Игрок мертв');
         }
 
-        $opponent->hit($damage);
+        $result = $opponent->hit($weapon_type);
+
+
+        switch(true){
+            case $result->status == User::HIT_STATUS_PENDING:
+                Yii::app()->user->setFlash('fighting', 'Arms is not ready...');
+                break;
+
+            case $result->status == User::HIT_STATUS_KILLED:
+                Yii::app()->user->setFlash('fighting', 'Opponent was killed');
+                break;
+        }
+
+        Yii::app()->user->logHit($result);
 
         if(!$opponent->save()){
             print_r($opponent->getErrors());exit;

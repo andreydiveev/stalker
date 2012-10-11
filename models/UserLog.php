@@ -91,4 +91,34 @@ class UserLog extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
+    public function logDamage($result){
+
+        switch(true){
+
+            case $result->status == User::HIT_STATUS_KILLED:
+                $this->message = 'You killed by ['.$result->assaulter.']';
+            break;
+
+            case $result->status == User::HIT_STATUS_WOUNDED:
+                $this->message = 'You wounded ['.$result->assaulter.'] by '.$result->damage;
+            break;
+        }
+
+    }
+
+    public function logHit($result){
+
+        switch(true){
+
+            case $result->status == User::HIT_STATUS_KILLED:
+                $this->message = 'You kill ['.$result->victim.']';
+                break;
+
+            case $result->status == User::HIT_STATUS_WOUNDED:
+                $this->message = 'You wound ['.$result->victim.'] by '.$result->damage;
+                break;
+        }
+
+    }
 }

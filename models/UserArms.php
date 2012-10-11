@@ -9,6 +9,8 @@
  * @property integer $user_id
  * @property integer $armed
  * @property integer $ext_damage
+ * @property integer $ext_reloading_time_less
+ * @property integer $last_shot
  *
  * The followings are the available model relations:
  * @property User $user
@@ -22,6 +24,8 @@ class UserArms extends CActiveRecord
     const KNIFE_TYPE_ID = 2;
     const PISTOL_TYPE_ID = 3;
     const MACHINE_GUN_TYPE_ID = 4;
+
+    const MIN_RELOADING_TIME = 2;
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -50,10 +54,10 @@ class UserArms extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('arms_id', 'required'),
-			array('arms_id, user_id, armed, ext_damage', 'numerical', 'integerOnly'=>true),
+			array('arms_id, user_id, armed, ext_damage, ext_reloading_time_less, last_shot', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, arms_id, user_id, armed, ext_damage', 'safe', 'on'=>'search'),
+			array('id, arms_id, user_id, armed, ext_damage, ext_reloading_time_less, last_shot', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -81,6 +85,8 @@ class UserArms extends CActiveRecord
 			'user_id' => 'User',
 			'armed' => 'Armed',
 			'ext_damage' => 'Ext Damage',
+            'ext_reloading_time_less' => 'Ext Reloading Time Less',
+            'last_shot' => 'Last Shot',
 		);
 	}
 
@@ -100,6 +106,8 @@ class UserArms extends CActiveRecord
 		$criteria->compare('user_id',$this->user_id);
 		$criteria->compare('armed',$this->armed);
 		$criteria->compare('ext_damage',$this->ext_damage);
+        $criteria->compare('ext_reloading_time_less',$this->ext_reloading_time_less);
+        $criteria->compare('last_shot',$this->last_shot);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -133,5 +141,28 @@ class UserArms extends CActiveRecord
         }else{
             print('null');
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getShotTimeRemaining(){
+
+        $since = time() - $this->last_shot;
+        $reloading_time = $this->arms->base_reloading_time - $this->ext_reloading_time_less;
+
+        if($reloading_time < UserArms::MIN_RELOADING_TIME){
+            $reloading_time = UserArms::MIN_RELOADING_TIME;
+        }
+
+        $time_remaining = $reloading_time - $since;
+
+        if($time_remaining < 0){
+            $result = 0;
+        }else{
+            $result = $time_remaining;
+        }
+
+        return $result;
     }
 }

@@ -1,3 +1,7 @@
+<?php if(Yii::app()->user->hasFlash('fighting')){
+    echo '<p style="color:red;font-weight:bold;">'.Yii::app()->user->getFlash('fighting').'<p/>';
+}?>
+
 <b>Игроки:<b/><br/>
 <?php foreach($area->getAliveUsers() as $player):?>
     <?php if($player->id == Yii::app()->user->id){continue;}?>
@@ -5,8 +9,10 @@
 
     <? if($player->getArmed()->count > 0):?>
         Атаковать
-        <? foreach(Yii::app()->user->getArmed()->arms as $arms):?>
-            [<a href="/fight/attack/<?=$player->id;?>?weapon_type=<?=$arms->type->id;?>"><?=$arms->type->single_name;?></a>]
+        <? foreach(Yii::app()->user->getArmed()->userArms as $userArms):?>
+            [<a href="/fight/attack/<?=$player->id;?>?weapon_type=<?=$userArms->arms->type_id;?>">
+                <?=$userArms->arms->type->single_name;?>
+            </a> (<?=$userArms->getShotTimeRemaining();?>)]
         <? endforeach;?>
     <? endif;?>
 
@@ -14,6 +20,9 @@
 
 <?php endforeach;?>
 <br/><br/>
+
+
+<?php $this->widget('LogWidget'); ?>
 
 <?php foreach($area->zone->areas as $a):?>
     <?php if($area->id == $a->id){continue;}?>

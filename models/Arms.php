@@ -9,6 +9,7 @@
  * @property string $name
  * @property integer $price
  * @property integer $damage
+ * @property integer $base_reloading_time
  *
  * The followings are the available model relations:
  * @property ArmsType $type
@@ -43,11 +44,11 @@ class Arms extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('type_id, name, price', 'required'),
-			array('type_id, price, damage', 'numerical', 'integerOnly'=>true),
+			array('type_id, price, damage, base_reloading_time', 'numerical', 'integerOnly'=>true),
 			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, type_id, name, price, damage', 'safe', 'on'=>'search'),
+			array('id, type_id, name, price, damage, base_reloading_time', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -75,6 +76,7 @@ class Arms extends CActiveRecord
 			'name' => 'Name',
 			'price' => 'Price',
 			'damage' => 'Damage',
+            'base_reloading_time' => 'Base Reloading Time',
 		);
 	}
 
@@ -94,6 +96,7 @@ class Arms extends CActiveRecord
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('price',$this->price);
 		$criteria->compare('damage',$this->damage);
+        $criteria->compare('base_reloading_time',$this->base_reloading_time);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
