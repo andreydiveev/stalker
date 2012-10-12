@@ -278,6 +278,7 @@ class User extends CActiveRecord
              $this->flushHp();
         }else{
             $this->current_hp = $this->last_beaten_hp + $regen;
+            if($this->current_hp < 0){$this->current_hp = 0;}
             $this->save();
         }
     }
@@ -295,5 +296,14 @@ class User extends CActiveRecord
         }
 
         return $level;
+    }
+
+    public function upExpo($info){
+        $up = 1000;
+
+        $this->expo += $up;
+        $this->save();
+
+        return $up;
     }
 }

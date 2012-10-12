@@ -97,4 +97,10 @@ class Area extends CActiveRecord
     public function getAliveUsers(){
         return User::model()->findAll('current_area = :area AND alive = 1', array(':area'=>$this->id));
     }
+
+    public function loadMobs(){
+        Mob::respawn($this->id);
+
+        return $this->mobs(array('condition'=>'alive = 1'));
+    }
 }

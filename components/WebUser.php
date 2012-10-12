@@ -20,7 +20,7 @@ class WebUser extends CWebUser
     }
 
     public function getArea(){
-
+        return $this->loadModel(Yii::app()->user->id)->current_area;
     }
 
     public function purchase($sum){
@@ -227,5 +227,20 @@ class WebUser extends CWebUser
         return $this->loadModel(Yii::app()->user->id)->alive;
     }
 
+    public function upExpo($info){
+        return $this->model()->upExpo($info);
+    }
+
+    protected function model(){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $model = User::model()->findByPk((int)$this->id);
+        if ($model === null) {
+            throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        return $model;
+    }
 
 }

@@ -7,32 +7,6 @@ class FightController extends Controller
 		$this->render('index');
 	}
 
-	// Uncomment the following methods and override them if needed
-	/*
-	public function filters()
-	{
-		// return the filter configuration for this controller, e.g.:
-		return array(
-			'inlineFilterName',
-			array(
-				'class'=>'path.to.FilterClass',
-				'propertyName'=>'propertyValue',
-			),
-		);
-	}
-
-	public function actions()
-	{
-		// return external action classes, e.g.:
-		return array(
-			'action1'=>'path.to.ActionClass',
-			'action2'=>array(
-				'class'=>'path.to.AnotherActionClass',
-				'propertyName'=>'propertyValue',
-			),
-		);
-	}
-	*/
     public function actionAttack(){
         $id = Yii::app()->request->getParam('id');
 
@@ -77,12 +51,57 @@ class FightController extends Controller
         $this->redirect( Yii::app()->request->urlReferrer);
     }
 
+    public function actionAttackMob(){
+        $id = Yii::app()->request->getParam('id');
+
+        $error = false;
+
+        if(!($weapon_type = Yii::app()->request->getParam('weapon_type'))){
+            $error = true;
+        }elseif(!is_numeric($weapon_type)){
+            $error = true;
+        }
+
+        if($error){
+            throw new CHttpException(404,'Оружие не найдено');
+        }
+
+
+        $mob = $this->loadMob($id);
+
+        if($mob === null){
+            throw new CHttpException(404,'Игрок не найден');
+        }elseif($mob->alive == 0){
+            throw new CHttpException(404,'Игрок мертв');
+        }
+
+        $result = $mob->hit($weapon_type);
+
+
+        switch(true){
+            case $result->status == Mob::HIT_STATUS_PENDING:
+                Yii::app()->user->setFlash('fighting', 'Arms is not ready...');
+                break;
+
+            case $result->status == Mob::HIT_STATUS_KILLED:
+                Yii::app()->user->setFlash('fighting', 'Opponent was killed');
+                break;
+        }
+
+        Yii::app()->user->logHit($result);
+
+        if(!$mob->save()){
+            print_r($opponent->getErrors());exit;
+        }
+
+        $this->redirect( Yii::app()->request->urlReferrer);
+    }
 
     public function filters()
     {
         return array(
-            'AccessControl + index',
-            'CheckId + SellArms, SellEquipment, TakeOffArms',
+            'AccessControl',
+            'CheckId + Attack, AttackMob',
         );
     }
 
@@ -107,7 +126,36 @@ class FightController extends Controller
 
     protected function loadModel($id)
     {
-        $model = User::model()->findByPk((int)$id, 'current_area = :user_current_area', array(':user_current_area'=>Yii::app()->user->getArea()));
+        if($id == Yii::app()->user->id){
+            throw new CHttpException(404, 'The requested page does not exist.');
+        }
+
+        $criteria = new CDbCriteria;
+        $criteria->condition = 'id = :id AND current_area = :current_area AND alive = 1';
+        $criteria->params = array(
+            ':id' => $id,
+            ':current_area' => Yii::app()->user->getArea(),
+        );
+        $criteria->limit = 1;
+
+        $model = User::model()->find($criteria);
+        if ($model === null) {
+            throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        return $model;
+    }
+
+    protected function loadMob($id)
+    {
+        $criteria = new CDbCriteria;
+        $criteria->condition = 'id = :id AND area_id = :current_area AND alive = 1';
+        $criteria->params = array(
+            ':id' => $id,
+            ':current_area' => Yii::app()->user->getArea(),
+        );
+        $criteria->limit = 1;
+
+        $model = Mob::model()->find($criteria);
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
         }

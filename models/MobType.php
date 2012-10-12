@@ -12,7 +12,7 @@
  *
  * The followings are the available model relations:
  * @property Mob[] $mobs
- * @property Levels $level0
+ * @property Levels $level_
  * @property Profession $profession
  * @property MobClass $class
  */
@@ -62,7 +62,7 @@ class MobType extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'mobs' => array(self::HAS_MANY, 'Mob', 'type_id'),
-			'level0' => array(self::BELONGS_TO, 'Levels', 'level'),
+			'level_' => array(self::BELONGS_TO, 'Levels', 'level'),
 			'profession' => array(self::BELONGS_TO, 'Profession', 'profession_id'),
 			'class' => array(self::BELONGS_TO, 'MobClass', 'class_id'),
 		);
