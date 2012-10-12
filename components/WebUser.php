@@ -10,30 +10,20 @@
 class WebUser extends CWebUser
 {
     public function getRegDate(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->reg_date;
+        return $this->loadModel(Yii::app()->user->id)->reg_date;
     }
 
     public function setArea($id){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
         $user = $this->loadModel(Yii::app()->user->id);
         $user->current_area = $id;
         $user->save();
     }
 
+    public function getArea(){
+
+    }
 
     public function purchase($sum){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
 
         $user = $this->loadModel(Yii::app()->user->id);
 
@@ -142,23 +132,11 @@ class WebUser extends CWebUser
     }
 
     public function getSquad(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->squad;
+        return $this->loadModel(Yii::app()->user->id)->squad;
     }
 
     public function getLevel(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->level;
+        return $this->loadModel(Yii::app()->user->id)->level;
     }
 
     public function getCurrentHp(){
@@ -166,53 +144,23 @@ class WebUser extends CWebUser
     }
 
     public function getExpo(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->expo;
+        return $this->loadModel(Yii::app()->user->id)->expo;
     }
 
     public function getFrag(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->frag;
+        return $this->loadModel(Yii::app()->user->id)->frag;
     }
 
     public function getTotalTime(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->total_time;
+        return $this->loadModel(Yii::app()->user->id)->total_time;
     }
 
     public function getArms(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->userArms;
+        return $this->loadModel(Yii::app()->user->id)->userArms;
     }
 
     public function getEquipments(){
-        if(Yii::app()->user->isGuest){
-            return false;
-        }
-
-        $user = $this->loadModel(Yii::app()->user->id);
-
-        return $user->userEquipments;
+        return $this->loadModel(Yii::app()->user->id)->userEquipments;
     }
 
     public function getDamage($type){
@@ -229,7 +177,7 @@ class WebUser extends CWebUser
 
     public function getLog(array $params = null){
 
-        $limit = (int)$params['limit'];
+        $limit = isset($params['limit'])?(int)$params['limit']:UserLog::BASE_LOG_DISPLAY_LIMIT;
 
         return $this->loadModel($this->id)->userLog(array('limit'=>$limit, 'order'=>'id DESC'));
     }

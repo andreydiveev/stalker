@@ -107,7 +107,7 @@ class FightController extends Controller
 
     protected function loadModel($id)
     {
-        $model = User::model()->findByPk((int)$id);
+        $model = User::model()->findByPk((int)$id, 'current_area = :user_current_area', array(':user_current_area'=>Yii::app()->user->getArea()));
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
         }

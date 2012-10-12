@@ -1,24 +1,27 @@
 <?php
 
 /**
- * This is the model class for table "user_log".
+ * This is the model class for table "mob".
  *
- * The followings are the available columns in table 'user_log':
+ * The followings are the available columns in table 'mob':
  * @property integer $id
- * @property integer $user_id
- * @property string $message
+ * @property integer $type_id
+ * @property string $name
+ * @property integer $current_hp
+ * @property integer $last_beaten_time
+ * @property integer $last_beaten_hp
+ * @property integer $area_id
  *
  * The followings are the available model relations:
- * @property User $user
+ * @property Area $area
+ * @property MobType $type
  */
-class UserLog extends CActiveRecord
+class Mob extends CActiveRecord
 {
-    const BASE_LOG_DISPLAY_LIMIT = 5;
-
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return UserLog the static model class
+	 * @return Mob the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -30,7 +33,7 @@ class UserLog extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'user_log';
+		return 'mob';
 	}
 
 	/**
@@ -41,12 +44,12 @@ class UserLog extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, message', 'required'),
-			array('user_id', 'numerical', 'integerOnly'=>true),
-			array('message', 'length', 'max'=>1024),
+			array('type_id, name, last_beaten_hp, area_id', 'required'),
+			array('type_id, current_hp, last_beaten_time, last_beaten_hp, area_id', 'numerical', 'integerOnly'=>true),
+			array('name', 'length', 'max'=>50),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, user_id, message', 'safe', 'on'=>'search'),
+			array('id, type_id, name, current_hp, last_beaten_time, last_beaten_hp, area_id', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,7 +61,8 @@ class UserLog extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+			'area' => array(self::BELONGS_TO, 'Area', 'area_id'),
+			'type' => array(self::BELONGS_TO, 'MobType', 'type_id'),
 		);
 	}
 
@@ -69,8 +73,12 @@ class UserLog extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'user_id' => 'User',
-			'message' => 'Message',
+			'type_id' => 'Type',
+			'name' => 'Name',
+			'current_hp' => 'Current Hp',
+			'last_beaten_time' => 'Last Beaten Time',
+			'last_beaten_hp' => 'Last Beaten Hp',
+			'area_id' => 'Area',
 		);
 	}
 
@@ -86,41 +94,15 @@ class UserLog extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('user_id',$this->user_id);
-		$criteria->compare('message',$this->message,true);
+		$criteria->compare('type_id',$this->type_id);
+		$criteria->compare('name',$this->name,true);
+		$criteria->compare('current_hp',$this->current_hp);
+		$criteria->compare('last_beaten_time',$this->last_beaten_time);
+		$criteria->compare('last_beaten_hp',$this->last_beaten_hp);
+		$criteria->compare('area_id',$this->area_id);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
-
-    public function logDamage($result){
-
-        switch(true){
-
-            case $result->status == User::HIT_STATUS_KILLED:
-                $this->message = 'You killed by ['.$result->assaulter.']';
-            break;
-
-            case $result->status == User::HIT_STATUS_WOUNDED:
-                $this->message = 'You wounded ['.$result->assaulter.'] by '.$result->damage;
-            break;
-        }
-
-    }
-
-    public function logHit($result){
-
-        switch(true){
-
-            case $result->status == User::HIT_STATUS_KILLED:
-                $this->message = 'You kill ['.$result->victim.']';
-                break;
-
-            case $result->status == User::HIT_STATUS_WOUNDED:
-                $this->message = 'You wound ['.$result->victim.'] by '.$result->damage;
-                break;
-        }
-
-    }
 }

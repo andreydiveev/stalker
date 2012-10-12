@@ -21,6 +21,12 @@
 <?php endforeach;?>
 <br/><br/>
 
+<p><b>Мобы:</b><br/>
+<?php foreach($area->mobs() as $mob):?>
+    [<?=$mob->id;?>]<br/>
+<?php endforeach;?>
+</p>
+
 
 <?php $this->widget('LogWidget'); ?>
 

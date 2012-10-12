@@ -1,8 +1,6 @@
 <?php
 
-class LogWidget extends CWidget
-{
-    const LOG_LIMIT = 5;
+class LogWidget extends CWidget{
 
     public function init()
     {
@@ -11,7 +9,7 @@ class LogWidget extends CWidget
 
     public function run()
     {
-        $logPoints = Yii::app()->user->getLog(array('limit'=>LogWidget::LOG_LIMIT));
+        $logPoints = Yii::app()->user->getLog(array('limit'=>UserLog::BASE_LOG_DISPLAY_LIMIT));
 
         $this->render('application.views.log.main', array('logPoints' => $logPoints));
         // этот метод будет вызван внутри CBaseController::endWidget()

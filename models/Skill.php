@@ -1,24 +1,21 @@
 <?php
 
 /**
- * This is the model class for table "user_log".
+ * This is the model class for table "skill".
  *
- * The followings are the available columns in table 'user_log':
+ * The followings are the available columns in table 'skill':
  * @property integer $id
- * @property integer $user_id
- * @property string $message
+ * @property integer $name
  *
  * The followings are the available model relations:
- * @property User $user
+ * @property ProfessionXSkill[] $professionXSkills
  */
-class UserLog extends CActiveRecord
+class Skill extends CActiveRecord
 {
-    const BASE_LOG_DISPLAY_LIMIT = 5;
-
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return UserLog the static model class
+	 * @return Skill the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -30,7 +27,7 @@ class UserLog extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'user_log';
+		return 'skill';
 	}
 
 	/**
@@ -41,12 +38,11 @@ class UserLog extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('user_id, message', 'required'),
-			array('user_id', 'numerical', 'integerOnly'=>true),
-			array('message', 'length', 'max'=>1024),
+			array('name', 'required'),
+			array('name', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, user_id, message', 'safe', 'on'=>'search'),
+			array('id, name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,7 +54,7 @@ class UserLog extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'User', 'user_id'),
+			'professionXSkills' => array(self::HAS_MANY, 'ProfessionXSkill', 'skill'),
 		);
 	}
 
@@ -69,8 +65,7 @@ class UserLog extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'user_id' => 'User',
-			'message' => 'Message',
+			'name' => 'Name',
 		);
 	}
 
@@ -86,41 +81,10 @@ class UserLog extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('user_id',$this->user_id);
-		$criteria->compare('message',$this->message,true);
+		$criteria->compare('name',$this->name);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
-
-    public function logDamage($result){
-
-        switch(true){
-
-            case $result->status == User::HIT_STATUS_KILLED:
-                $this->message = 'You killed by ['.$result->assaulter.']';
-            break;
-
-            case $result->status == User::HIT_STATUS_WOUNDED:
-                $this->message = 'You wounded ['.$result->assaulter.'] by '.$result->damage;
-            break;
-        }
-
-    }
-
-    public function logHit($result){
-
-        switch(true){
-
-            case $result->status == User::HIT_STATUS_KILLED:
-                $this->message = 'You kill ['.$result->victim.']';
-                break;
-
-            case $result->status == User::HIT_STATUS_WOUNDED:
-                $this->message = 'You wound ['.$result->victim.'] by '.$result->damage;
-                break;
-        }
-
-    }
 }

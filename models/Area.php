@@ -10,6 +10,7 @@
  *
  * The followings are the available model relations:
  * @property Zone $zone
+ * @property Mob[] $mobs
  */
 class Area extends CActiveRecord
 {
@@ -57,6 +58,7 @@ class Area extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'zone' => array(self::BELONGS_TO, 'Zone', 'zone_id'),
+			'mobs' => array(self::HAS_MANY, 'Mob', 'area_id'),
 		);
 	}
 
