@@ -134,6 +134,31 @@ switch($lvl){
     }
 
     case 20:{
+        // main
+
+        $url = 'http://sta1ker.com/';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+        // zona
+        $url = 'http://sta1ker.com/zona.php';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+        // svalka
+        $url = 'http://sta1ker.com/agroprom.php?location=agroprom6';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+        // svalka
+        $url = 'http://sta1ker.com/attack.php?attack=bp';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+
+
+        $url = 'http://sta1ker.com/attack.php?rand=0&weapon=avtomat&attack=17';
+        $client->setUri($url);
+        $response_google2 = $client->send();
         break;
     }
 
