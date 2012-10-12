@@ -155,7 +155,11 @@ switch($lvl){
         $client->setUri($url);
         $response_google2 = $client->send();
 
-
+        // svalka
+        $url = 'http://sta1ker.com/agroprom.php?location=agroprom5';
+        $client->setUri($url);
+        $response_google2 = $client->send();
+        
         $url = 'http://sta1ker.com/attack.php?rand=0&weapon=avtomat&attack=17';
         $client->setUri($url);
         $response_google2 = $client->send();
