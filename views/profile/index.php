@@ -30,6 +30,7 @@ $this->breadcrumbs=array(
 деньги: <b><?php echo Yii::app()->user->getCash(); ?></b><br/>
 <p/>
 
+<a href="/mail">Почта</a>
 
 <h3>Оружие:</h3>
 <?php foreach (Yii::app()->user->getArms() as $userArms):?>
