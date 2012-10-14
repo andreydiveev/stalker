@@ -7,14 +7,14 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Create UserMessage', 'url'=>array('create')),
-	array('label'=>'Manage UserMessage', 'url'=>array('admin')),
+	array('label'=>'Входящие', 'url'=>array('/mail/incoming')),
+	array('label'=>'Отправленные', 'url'=>array('/mail/outgoing')),
 );
 ?>
 
 <h1>User Messages</h1>
 
 <?php $this->widget('zii.widgets.CListView', array(
-	'dataProvider'=>$dataProvider,
-	'itemView'=>'_view',
+    'dataProvider'=>$dataProvider,
+    'itemView'=>'_view',
 )); ?>

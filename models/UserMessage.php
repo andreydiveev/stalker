@@ -44,7 +44,7 @@ class UserMessage extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('from, to, text, date', 'required'),
+			array('to, text, date', 'required'),
 			array('from, to, readed, date, deleted', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -104,4 +104,9 @@ class UserMessage extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
+
+    public function setDeleted(){
+        $this->deleted = 1;
+        $this->save();
+    }
 }

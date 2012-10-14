@@ -24,7 +24,7 @@ class MailController extends Controller
 	 * This method is used by the 'accessControl' filter.
 	 * @return array access control rules
 	 */
-	public function accessRules()
+	/*public function accessRules()
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
@@ -43,7 +43,7 @@ class MailController extends Controller
 				'users'=>array('*'),
 			),
 		);
-	}
+	}*/
 
 	/**
 	 * Displays a particular model.
@@ -62,6 +62,8 @@ class MailController extends Controller
 	 */
 	public function actionCreate()
 	{
+
+
 		$model=new UserMessage;
 
 		// Uncomment the following line if AJAX validation is needed
@@ -69,36 +71,22 @@ class MailController extends Controller
 
 		if(isset($_POST['UserMessage']))
 		{
+            $to = Yii::app()->request->getParam('id');
+            $taker = User::model()->findByPk($to);
+
+            if($taker === null){
+                throw new CHttpException(404,'The requested page does not exist.');
+            }
+
 			$model->attributes=$_POST['UserMessage'];
+            $model->from = Yii::app()->user->id;
+            $model->to = $taker->id;
+
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('create',array(
-			'model'=>$model,
-		));
-	}
-
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
-	public function actionUpdate($id)
-	{
-		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
-
-		if(isset($_POST['UserMessage']))
-		{
-			$model->attributes=$_POST['UserMessage'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-		}
-
-		$this->render('update',array(
 			'model'=>$model,
 		));
 	}
@@ -110,7 +98,7 @@ class MailController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->loadModel($id)->delete();
+		$this->loadModel($id)->setDeleted();
 
 		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
@@ -122,11 +110,27 @@ class MailController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('UserMessage');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
+        $dataProvider=new CActiveDataProvider('UserMessage');
+        $this->render('index',array(
+            'dataProvider'=>$dataProvider,
+        ));
 	}
+
+    public function actionIncoming()
+    {
+        $dataProvider=new CActiveDataProvider('UserMessage');
+        $this->render('index',array(
+            'dataProvider'=>$dataProvider,
+        ));
+    }
+
+    public function actionOutgoing()
+    {
+        $dataProvider=new CActiveDataProvider('UserMessage');
+        $this->render('index',array(
+            'dataProvider'=>$dataProvider,
+        ));
+    }
 
 	/**
 	 * Manages all models.
@@ -168,4 +172,5 @@ class MailController extends Controller
 			Yii::app()->end();
 		}
 	}
+
 }
