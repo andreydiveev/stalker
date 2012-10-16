@@ -26,6 +26,8 @@
  * @property UserArms[] $userArms
  * @property UserEquipment[] $userEquipments
  * @property UserLog[] $userLog
+ * @property UserMessages[] $outgoingMessages
+ * @property UserMessages[] $incomingMessages
  * @property Levels $level_
  */
 class User extends CActiveRecord
@@ -88,6 +90,8 @@ class User extends CActiveRecord
 			'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'user_id'),
             'userLog' => array(self::HAS_MANY, 'UserLog', 'user_id'),
             'level_' => array(self::BELONGS_TO, 'Levels', 'level'),
+            'outgoingMessages' => array(self::HAS_MANY, 'UserMessage', 'to'),
+            'incomingMessages' => array(self::HAS_MANY, 'UserMessage', 'from'),
 		);
 	}
 

@@ -3,16 +3,14 @@
 /* @var $model UserMessage */
 
 $this->breadcrumbs=array(
-	'User Messages'=>array('index'),
-	'Create',
+	'Почта'=>array('index'),
+	'Новое сообщение',
 );
 
 $this->menu=array(
-	array('label'=>'List UserMessage', 'url'=>array('index')),
-	array('label'=>'Manage UserMessage', 'url'=>array('admin')),
+    array('label'=>'Входящие', 'url'=>array('/mail/incoming')),
+    array('label'=>'Отправленные', 'url'=>array('/mail/outgoing')),
 );
 ?>
-
-<h1>Create UserMessage</h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

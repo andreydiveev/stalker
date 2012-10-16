@@ -13,8 +13,8 @@
  * @property integer $deleted
  *
  * The followings are the available model relations:
- * @property User $from0
- * @property User $to0
+ * @property User $sender
+ * @property User $taker
  */
 class UserMessage extends CActiveRecord
 {
@@ -60,8 +60,8 @@ class UserMessage extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'from0' => array(self::BELONGS_TO, 'User', 'from'),
-			'to0' => array(self::BELONGS_TO, 'User', 'to'),
+			'sender' => array(self::BELONGS_TO, 'User', 'from'),
+			'taker' => array(self::BELONGS_TO, 'User', 'to'),
 		);
 	}
 

@@ -15,7 +15,7 @@ class MailController extends Controller
 	{
 		return array(
 			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
+			//'postOnly + delete', // we only allow deletion via POST request
 		);
 	}
 
@@ -99,11 +99,15 @@ class MailController extends Controller
 	 */
 	public function actionDelete($id)
 	{
-		$this->loadModel($id)->setDeleted();
+		$model = $this->loadModel($id);
 
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-		if(!isset($_GET['ajax']))
-			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+        if($model->sender->id == Yii::app()->user->id || $model->taker->id == Yii::app()->user->id){
+            $model->setDeleted();
+        }else{
+            throw new CHttpExeption(404, 'The requested page is not exist');
+        }
+
+        $this->redirect('/mail');
 	}
 
 	/**
@@ -111,7 +115,16 @@ class MailController extends Controller
 	 */
 	public function actionIndex()
 	{
-        $dataProvider=new CActiveDataProvider('UserMessage');
+        $dataProvider=new CActiveDataProvider('UserMessage', array(
+            'criteria'=>array(
+                'condition' => '`from` = :user OR `to` = :user AND deleted = 0',
+                'params' => array(':user'=>Yii::app()->user->id),
+                'order'=>'`t`.`id` DESC',
+            ),
+            'pagination'=>array(
+                'pageSize'=>10,
+            ),
+        ));
         $this->render('index',array(
             'dataProvider'=>$dataProvider,
         ));
@@ -121,8 +134,9 @@ class MailController extends Controller
     {
         $dataProvider=new CActiveDataProvider('UserMessage', array(
             'criteria'=>array(
-                'condition'=>'`t`.`to` = :user_id',
+                'condition'=>'`t`.`to` = :user_id AND deleted = 0',
                 'params'   =>array(':user_id'=>Yii::app()->user->id),
+                'order'=>'`t`.`id` DESC',
             ),
             'pagination'=>array(
                 'pageSize'=>10,
@@ -137,8 +151,9 @@ class MailController extends Controller
     {
         $dataProvider=new CActiveDataProvider('UserMessage', array(
             'criteria'=>array(
-                'condition'=>'`t`.`from` = :user_id',
+                'condition'=>'`t`.`from` = :user_id AND deleted = 0',
                 'params'   =>array(':user_id'=>Yii::app()->user->id),
+                'order'=>'`t`.`id` DESC',
             ),
             'pagination'=>array(
                 'pageSize'=>10,
@@ -171,9 +186,10 @@ class MailController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=UserMessage::model()->findByPk($id);
-		if($model===null)
+		$model=UserMessage::model()->findByPk($id, 'deleted = 0');
+		if($model===null){
 			throw new CHttpException(404,'The requested page does not exist.');
+        }
 		return $model;
 	}
 

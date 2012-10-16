@@ -4,17 +4,15 @@
 ?>
 
 <div class="view">
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
+    <?php ($data->sender->id == Yii::app()->user->id)?$incoming = false:$incoming = true; ?>
+	<?php echo (($incoming)?'from ':'to ') . CHtml::link(
+        CHtml::encode(($incoming)?$data->taker->nick:$data->sender->nick),
+        array('view', 'id'=>$data->id)
+    ); ?>
+    <?php echo date('<b>d.m.Y</b> H:i:s', CHtml::encode($data->date)); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('text')); ?>:</b>
-	<?php echo CHtml::encode($data->text); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('date')); ?>:</b>
-	<?php echo CHtml::encode(date('d.m.Y H:i:s', $data->date)); ?>
+	<?php echo Collection::cutString(CHtml::encode($data->text),20); ?>
 	<br />
 
 

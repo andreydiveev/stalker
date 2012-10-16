@@ -3,7 +3,7 @@
 /* @var $dataProvider CActiveDataProvider */
 
 $this->breadcrumbs=array(
-	'User Messages',
+	'Почта',
 );
 
 $this->menu=array(
@@ -11,8 +11,6 @@ $this->menu=array(
 	array('label'=>'Отправленные', 'url'=>array('/mail/outgoing')),
 );
 ?>
-
-<h1>User Messages</h1>
 
 <?php $this->widget('zii.widgets.CListView', array(
     'dataProvider'=>$dataProvider,
