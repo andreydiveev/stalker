@@ -109,4 +109,9 @@ class UserMessage extends CActiveRecord
         $this->deleted = 1;
         $this->save();
     }
+
+    public function setReaded(){
+        $this->readed = 1;
+        $this->save();
+    }
 }

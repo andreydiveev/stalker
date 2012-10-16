@@ -51,8 +51,10 @@ class MailController extends Controller
 	 */
 	public function actionView($id)
 	{
+        $model = $this->loadModel($id);
+        $model->setReaded();
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+			'model'=>$model,
 		));
 	}
 
@@ -117,7 +119,7 @@ class MailController extends Controller
 	{
         $dataProvider=new CActiveDataProvider('UserMessage', array(
             'criteria'=>array(
-                'condition' => '`from` = :user OR `to` = :user AND deleted = 0',
+                'condition' => '(`from` = :user OR `to` = :user) AND deleted = 0',
                 'params' => array(':user'=>Yii::app()->user->id),
                 'order'=>'`t`.`id` DESC',
             ),

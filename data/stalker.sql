@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Окт 16 2012 г., 12:17
+-- Время создания: Окт 16 2012 г., 14:56
 -- Версия сервера: 5.5.24
 -- Версия PHP: 5.3.10-1ubuntu3.4
 
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `arms` (
   `base_reloading_time` int(11) NOT NULL DEFAULT '2',
   PRIMARY KEY (`id`),
   KEY `type_id` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=36 ;
 
 --
 -- Дамп данных таблицы `arms`
@@ -68,8 +68,35 @@ CREATE TABLE IF NOT EXISTS `arms` (
 
 INSERT INTO `arms` (`id`, `type_id`, `name`, `price`, `damage`, `base_reloading_time`) VALUES
 (4, 2, 'Охотничий нож', 100, 10, 2),
-(5, 3, 'ТТ (с глушителем)', 1000, 10, 10),
-(6, 4, 'АК-47', 100, 10, 30);
+(7, 4, 'Обрез', 100, 10, 2),
+(8, 4, 'Охотничье ружьё', 100, 10, 2),
+(9, 4, 'Чейзер 13', 100, 10, 2),
+(10, 4, 'СПАС 14', 100, 10, 2),
+(11, 4, 'АКМ-74/2У', 100, 10, 2),
+(12, 4, 'Гадюка 5', 100, 10, 2),
+(13, 4, 'АКМ-74/2', 100, 10, 2),
+(14, 4, 'ИЛ 86', 100, 10, 2),
+(15, 4, 'АС-96/2', 100, 10, 2),
+(16, 4, 'ТРс-301', 100, 10, 2),
+(17, 4, 'СГИ-5к', 100, 10, 2),
+(18, 4, 'Гром-С14', 100, 10, 2),
+(19, 4, 'ГП-37', 100, 10, 2),
+(20, 4, 'СА "Лавина"', 100, 10, 2),
+(21, 4, 'ФТ 200М', 100, 10, 2),
+(22, 4, 'РП-74', 100, 10, 2),
+(23, 4, 'Винтарь-ВС', 100, 10, 2),
+(24, 4, 'СВДм-2', 100, 10, 2),
+(25, 4, 'СВУмк-2', 100, 10, 2),
+(26, 4, 'ЭМ1', 100, 10, 2),
+(27, 3, 'ПМм', 100, 10, 2),
+(28, 3, 'Фора-12', 100, 10, 2),
+(29, 3, 'ХПСС-1м', 100, 10, 2),
+(30, 3, 'Марта', 100, 10, 2),
+(31, 3, 'Волкер-П9м', 100, 10, 2),
+(32, 3, 'УДП Компакт', 100, 10, 2),
+(33, 3, 'СИП-т М200', 100, 10, 2),
+(34, 3, 'Кора-919', 100, 10, 2),
+(35, 3, 'Чёрный ястреб', 100, 10, 2);
 
 -- --------------------------------------------------------
 
@@ -168,7 +195,7 @@ CREATE TABLE IF NOT EXISTS `equipment` (
   `armor` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `type_id` (`type_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=16 ;
 
 --
 -- Дамп данных таблицы `equipment`
@@ -176,7 +203,20 @@ CREATE TABLE IF NOT EXISTS `equipment` (
 
 INSERT INTO `equipment` (`id`, `type_id`, `name`, `price`, `armor`) VALUES
 (1, 1, 'Спецназ-75', 500, 1),
-(2, 2, 'Омон-13', 450, 1);
+(2, 2, 'Омон-13', 450, 1),
+(3, 2, 'Кожаная куртка', 100, 1),
+(4, 2, 'Бандитская куртка', 100, 1),
+(5, 2, 'Бронежилет ЧН-1', 100, 1),
+(6, 2, 'Комб. «Заря»', 100, 1),
+(7, 2, 'Бронежилет ЧН-2', 100, 1),
+(8, 2, 'Комб. «Ветер свободы»', 100, 1),
+(9, 2, 'ПС5-М «Унив. защ.»', 100, 1),
+(10, 2, 'Бронекостюм «Берилл-5М»', 100, 1),
+(11, 2, 'Бронежилет ЧН-3а', 100, 1),
+(12, 2, 'Комб «Страж свободы»', 100, 1),
+(13, 2, 'Комб. «СЕВА»', 100, 1),
+(14, 2, 'ПСЗ-9д «Броня Долга»', 100, 1),
+(15, 2, 'Экзоскелет «Свобода»', 100, 1);
 
 -- --------------------------------------------------------
 
@@ -410,7 +450,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 INSERT INTO `user` (`id`, `email`, `password`, `nick`, `reg_date`, `last_activity`, `last_beaten`, `last_beaten_hp`, `total_time`, `frag`, `squad`, `expo`, `level`, `current_hp`, `current_area`, `cash`, `alive`) VALUES
 (1, 'admin12@ya.ru', 'e10adc3949ba59abbe56e057f20f883e', 'Admin', 1348471986, 1350414253, 1350413671, 90, 0, 0, NULL, 0, 1, 200, 1, 8350, 1),
-(2, 'admin@stalker.ru', '4297f44b13955235245b2497399d7a93', 'AAd', 1348472004, 1350414356, 1350029382, -2, 0, 0, NULL, 4000, 1, 200, 1, 95, 1),
+(2, 'admin@stalker.ru', '4297f44b13955235245b2497399d7a93', 'AAd', 1348472004, 1350424544, 1350029382, -2, 0, 0, NULL, 4000, 1, 200, 1, 95, 1),
 (4, 'a@ya.ru', '4297f44b13955235245b2497399d7a93', 'a', 1348840372, 1348840469, NULL, NULL, 0, 0, NULL, 0, 1, 0, 2, 0, 0);
 
 -- --------------------------------------------------------
@@ -437,40 +477,16 @@ CREATE TABLE IF NOT EXISTS `user_arms` (
 --
 
 INSERT INTO `user_arms` (`id`, `arms_id`, `user_id`, `armed`, `ext_damage`, `ext_reloading_time_less`, `last_shot`) VALUES
-(1, 5, NULL, 0, 0, 0, 0),
-(23, 5, NULL, 0, 0, 0, 0),
-(24, 5, NULL, 0, 0, 0, 0),
-(25, 5, NULL, 0, 0, 0, 0),
-(26, 5, NULL, 0, 0, 0, 0),
-(27, 5, NULL, 0, 0, 0, 0),
-(28, 5, NULL, 0, 0, 0, 0),
-(29, 5, NULL, 0, 0, 0, 0),
-(30, 5, NULL, 0, 0, 0, 0),
-(31, 5, NULL, 0, 0, 0, 0),
-(32, 5, NULL, 0, 0, 0, 0),
-(33, 5, NULL, 0, 0, 0, 0),
-(34, 6, NULL, 0, 0, 0, 0),
 (35, 4, NULL, 0, 0, 0, 0),
 (36, 4, NULL, 0, 0, 0, 0),
-(37, 5, NULL, 0, 0, 0, 0),
-(38, 5, 2, 1, 100, 0, 1350413671),
-(39, 5, 2, 0, 0, 0, 0),
-(40, 5, NULL, 0, 0, 0, 0),
 (41, 4, NULL, 0, 0, 0, 0),
 (42, 4, NULL, 0, 0, 0, 0),
 (43, 4, NULL, 0, 0, 0, 0),
-(44, 6, NULL, 0, 0, 0, 0),
-(45, 6, NULL, 0, 0, 0, 0),
-(46, 6, NULL, 0, 0, 0, 0),
 (47, 4, NULL, 0, 0, 0, 0),
 (48, 4, 2, 0, 0, 0, 0),
 (49, 4, 2, 0, 0, 0, 0),
 (50, 4, 2, 1, 0, 0, 1350058531),
-(51, 6, NULL, 1, 0, 0, 0),
-(52, 6, 2, 1, 0, 0, 1350058527),
-(53, 4, 1, 1, 0, 0, 1349947039),
-(54, 5, NULL, 0, 0, 0, 0),
-(55, 5, 1, 0, 0, 0, 0);
+(53, 4, 1, 1, 0, 0, 1349947039);
 
 -- --------------------------------------------------------
 
@@ -748,15 +764,18 @@ CREATE TABLE IF NOT EXISTS `user_message` (
   PRIMARY KEY (`id`),
   KEY `from` (`from`),
   KEY `to` (`to`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
 
 --
 -- Дамп данных таблицы `user_message`
 --
 
 INSERT INTO `user_message` (`id`, `from`, `to`, `text`, `readed`, `date`, `deleted`) VALUES
-(1, 1, 2, '1 to 2', 0, 123, 0),
-(2, 2, 1, 'efeefe', 0, 1350414194, 0);
+(1, 1, 2, '1 to 2', 0, 123, 1),
+(2, 2, 1, 'efeefe', 1, 1350414194, 0),
+(3, 2, 1, 'wfwefwefwfwefwfwfwf', 1, 1350417048, 0),
+(4, 2, 1, 'ewfffffffffffffffffffffffffffffffffffffffffffffffffff', 1, 1350417087, 0),
+(5, 2, 1, 'wefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwf', 0, 1350417105, 1);
 
 -- --------------------------------------------------------
 
