@@ -26,6 +26,7 @@
  * @property UserArms[] $userArms
  * @property UserEquipment[] $userEquipments
  * @property UserLog[] $userLog
+ * @property Levels $level_
  */
 class User extends CActiveRecord
 {
@@ -86,6 +87,7 @@ class User extends CActiveRecord
 			'userArms' => array(self::HAS_MANY, 'UserArms', 'user_id'),
 			'userEquipments' => array(self::HAS_MANY, 'UserEquipment', 'user_id'),
             'userLog' => array(self::HAS_MANY, 'UserLog', 'user_id'),
+            'level_' => array(self::BELONGS_TO, 'Levels', 'level'),
 		);
 	}
 

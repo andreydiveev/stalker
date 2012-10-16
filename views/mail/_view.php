@@ -14,7 +14,7 @@
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('date')); ?>:</b>
-	<?php echo CHtml::encode($data->date); ?>
+	<?php echo CHtml::encode(date('d.m.Y H:i:s', $data->date)); ?>
 	<br />
 
 

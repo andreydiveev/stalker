@@ -7,8 +7,12 @@ class ProfileController extends Controller
 		$this->render('index');
 	}
 
-    public function actionPublic(){
-        $this->render('external');
+    public function actionId(){
+        $id = Yii::app()->request->getParam('id');
+
+        $model = $this->loadModel($id);
+
+        $this->render('external', array('user'=>$model));
     }
 
     public function actionSellArms(){
@@ -130,5 +134,22 @@ class ProfileController extends Controller
     public function actionRise(){
          Yii::app()->user->rise();
          $this->redirect( Yii::app()->request->urlReferrer);
+    }
+
+    /**
+     * @param $id
+     * @return User
+     * @throws CHttpException
+     */
+    protected function loadModel($id){
+        if(Yii::app()->user->isGuest){
+            return false;
+        }
+
+        $model = User::model()->findByPk((int)$id);
+        if ($model === null) {
+            throw new CHttpException(404, 'The requested page does not exist.');
+        }
+        return $model;
     }
 }

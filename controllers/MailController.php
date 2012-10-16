@@ -60,7 +60,7 @@ class MailController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
+	public function actionTo()
 	{
 
 
@@ -74,13 +74,14 @@ class MailController extends Controller
             $to = Yii::app()->request->getParam('id');
             $taker = User::model()->findByPk($to);
 
-            if($taker === null){
+            if($taker === null || Yii::app()->user->id == $taker->id){
                 throw new CHttpException(404,'The requested page does not exist.');
             }
 
 			$model->attributes=$_POST['UserMessage'];
             $model->from = Yii::app()->user->id;
             $model->to = $taker->id;
+            $model->date = time();
 
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
@@ -118,7 +119,15 @@ class MailController extends Controller
 
     public function actionIncoming()
     {
-        $dataProvider=new CActiveDataProvider('UserMessage');
+        $dataProvider=new CActiveDataProvider('UserMessage', array(
+            'criteria'=>array(
+                'condition'=>'`t`.`to` = :user_id',
+                'params'   =>array(':user_id'=>Yii::app()->user->id),
+            ),
+            'pagination'=>array(
+                'pageSize'=>10,
+            ),
+        ));
         $this->render('index',array(
             'dataProvider'=>$dataProvider,
         ));
@@ -126,7 +135,15 @@ class MailController extends Controller
 
     public function actionOutgoing()
     {
-        $dataProvider=new CActiveDataProvider('UserMessage');
+        $dataProvider=new CActiveDataProvider('UserMessage', array(
+            'criteria'=>array(
+                'condition'=>'`t`.`from` = :user_id',
+                'params'   =>array(':user_id'=>Yii::app()->user->id),
+            ),
+            'pagination'=>array(
+                'pageSize'=>10,
+            ),
+        ));
         $this->render('index',array(
             'dataProvider'=>$dataProvider,
         ));
