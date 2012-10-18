@@ -41,7 +41,7 @@
 </p>
 
 
-<?php /*$this->widget('LogWidget');*/$r=''; ?>
+<?php $this->widget('LogWidget'); ?>
 
 <?php foreach($area->zone->areas as $a):?>
     <?php if($area->id == $a->id){continue;}?>
