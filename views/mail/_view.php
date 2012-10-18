@@ -6,9 +6,9 @@
 <div class="view">
     <?php ($data->sender->id == Yii::app()->user->id)?$incoming = false:$incoming = true; ?>
 
-    <?php ($incoming)?$nick = $data->taker->nick:$nick = $data->sender->nick?>
+    <?php ($incoming)?$nick = $data->sender->nick:$nick = $data->taker->nick?>
     <?php $link = CHtml::link(CHtml::encode($nick),array('view', 'id'=>$data->id));?>
-    <?php ($data->readed == 1)?'':$link = '<b>'.$link.'</b>';?>
+    <?php ($data->readed == 0 && $data->sender->id != Yii::app()->user->id)?$link = '<b>'.$link.'</b>':'';?>
     <?php echo (($incoming)?'from ':'to ') . $link; ?>
     <?php echo date('<b>d.m.Y</b> H:i:s', CHtml::encode($data->date)); ?>
 	<br />

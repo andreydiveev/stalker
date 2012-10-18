@@ -8,6 +8,15 @@ class MailController extends Controller
 	 */
 	public $layout='//layouts/column2';
 
+    protected function beforeAction()
+    {
+        if(!Yii::app()->user->isGuest){
+            Yii::app()->user->setArea(null);
+        }
+
+        return true;
+    }
+
 	/**
 	 * @return array action filters
 	 */
@@ -52,9 +61,45 @@ class MailController extends Controller
 	public function actionView($id)
 	{
         $model = $this->loadModel($id);
-        $model->setReaded();
+
+        if($model->taker->id == Yii::app()->user->id){
+            $model->setReaded();
+            $incoming = true;
+        }else{
+            $incoming = false;
+        }
+
+        $new_message=new UserMessage;
+
+        // Uncomment the following line if AJAX validation is needed
+        // $this->performAjaxValidation($model);
+
+        if(isset($_POST['UserMessage']))
+        {
+            if($incoming){
+                $to = $model->sender->id;
+            }else{
+                $to = $model->taker->id;
+            }
+
+            $taker = User::model()->findByPk($to);
+
+            if($taker === null || Yii::app()->user->id == $taker->id){
+                throw new CHttpException(404,'The requested page does not exist.');
+            }
+
+            $new_message->attributes=$_POST['UserMessage'];
+            $new_message->from = Yii::app()->user->id;
+            $new_message->to = $taker->id;
+            $new_message->date = time();
+
+            if($new_message->save())
+                $this->redirect(array('view','id'=>$new_message->id));
+        }
+
 		$this->render('view',array(
 			'model'=>$model,
+            'new_message'=>$new_message,
 		));
 	}
 
@@ -64,9 +109,7 @@ class MailController extends Controller
 	 */
 	public function actionTo()
 	{
-
-
-		$model=new UserMessage;
+        $model=new UserMessage;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -119,7 +162,7 @@ class MailController extends Controller
 	{
         $dataProvider=new CActiveDataProvider('UserMessage', array(
             'criteria'=>array(
-                'condition' => '(`from` = :user OR `to` = :user) AND deleted = 0',
+                'condition' => '(`from` = :user OR `to` = :user) AND deleted_by_taker = 0 AND deleted_by_sender = 0',
                 'params' => array(':user'=>Yii::app()->user->id),
                 'order'=>'`t`.`id` DESC',
             ),
@@ -136,7 +179,7 @@ class MailController extends Controller
     {
         $dataProvider=new CActiveDataProvider('UserMessage', array(
             'criteria'=>array(
-                'condition'=>'`t`.`to` = :user_id AND deleted = 0',
+                'condition'=>'`t`.`to` = :user_id AND deleted_by_taker = 0',
                 'params'   =>array(':user_id'=>Yii::app()->user->id),
                 'order'=>'`t`.`id` DESC',
             ),
@@ -153,7 +196,7 @@ class MailController extends Controller
     {
         $dataProvider=new CActiveDataProvider('UserMessage', array(
             'criteria'=>array(
-                'condition'=>'`t`.`from` = :user_id AND deleted = 0',
+                'condition'=>'`t`.`from` = :user_id AND deleted_by_sender = 0',
                 'params'   =>array(':user_id'=>Yii::app()->user->id),
                 'order'=>'`t`.`id` DESC',
             ),
@@ -167,45 +210,21 @@ class MailController extends Controller
     }
 
 	/**
-	 * Manages all models.
-	 */
-	public function actionAdmin()
-	{
-		$model=new UserMessage('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['UserMessage']))
-			$model->attributes=$_GET['UserMessage'];
-
-		$this->render('admin',array(
-			'model'=>$model,
-		));
-	}
-
-	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer the ID of the model to be loaded
 	 */
 	public function loadModel($id)
 	{
-		$model=UserMessage::model()->findByPk($id, 'deleted = 0');
+		$model=UserMessage::model()->findByPk(
+            $id,
+            '(`from` = :user OR `to` = :user) AND deleted_by_taker = 0 AND deleted_by_sender = 0',
+            array(':user'=>Yii::app()->user->id)
+        );
 		if($model===null){
 			throw new CHttpException(404,'The requested page does not exist.');
         }
 		return $model;
-	}
-
-	/**
-	 * Performs the AJAX validation.
-	 * @param CModel the model to be validated
-	 */
-	protected function performAjaxValidation($model)
-	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='user-message-form')
-		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
 	}
 
 }

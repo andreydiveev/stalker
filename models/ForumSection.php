@@ -1,28 +1,26 @@
 <?php
 
 /**
- * This is the model class for table "user_message".
+ * This is the model class for table "forum_section".
  *
- * The followings are the available columns in table 'user_message':
+ * The followings are the available columns in table 'forum_section':
  * @property integer $id
- * @property integer $from
- * @property integer $to
- * @property string $text
- * @property integer $readed
- * @property integer $date
- * @property integer $deleted_by_sender
- * @property integer $deleted_by_taker
+ * @property integer $forum_id
+ * @property integer $parent
+ * @property string $name
  *
  * The followings are the available model relations:
- * @property User $from0
- * @property User $to0
+ * @property Forum $forum
+ * @property ForumSection $parent0
+ * @property ForumSection[] $forumSections
+ * @property ForumTopic[] $forumTopics
  */
-class UserMessage extends CActiveRecord
+class ForumSection extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return UserMessage the static model class
+	 * @return ForumSection the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -34,7 +32,7 @@ class UserMessage extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'user_message';
+		return 'forum_section';
 	}
 
 	/**
@@ -45,11 +43,12 @@ class UserMessage extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('from, to, text, date', 'required'),
-			array('from, to, readed, date, deleted_by_sender, deleted_by_taker', 'numerical', 'integerOnly'=>true),
+			array('forum_id, name', 'required'),
+			array('forum_id, parent', 'numerical', 'integerOnly'=>true),
+			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, from, to, text, readed, date, deleted_by_sender, deleted_by_taker', 'safe', 'on'=>'search'),
+			array('id, forum_id, parent, name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -61,8 +60,10 @@ class UserMessage extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'sender' => array(self::BELONGS_TO, 'User', 'from'),
-			'taker' => array(self::BELONGS_TO, 'User', 'to'),
+			'forum' => array(self::BELONGS_TO, 'Forum', 'forum_id'),
+			'parent0' => array(self::BELONGS_TO, 'ForumSection', 'parent'),
+			'forumSections' => array(self::HAS_MANY, 'ForumSection', 'parent'),
+			'forumTopics' => array(self::HAS_MANY, 'ForumTopic', 'section_id'),
 		);
 	}
 
@@ -73,13 +74,9 @@ class UserMessage extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'from' => 'From',
-			'to' => 'To',
-			'text' => 'Text',
-			'readed' => 'Readed',
-			'date' => 'Date',
-			'deleted_by_sender' => 'Deleted By Sender',
-			'deleted_by_taker' => 'Deleted By Taker',
+			'forum_id' => 'Forum',
+			'parent' => 'Parent',
+			'name' => 'Name',
 		);
 	}
 
@@ -95,26 +92,12 @@ class UserMessage extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('from',$this->from);
-		$criteria->compare('to',$this->to);
-		$criteria->compare('text',$this->text,true);
-		$criteria->compare('readed',$this->readed);
-		$criteria->compare('date',$this->date);
-		$criteria->compare('deleted_by_sender',$this->deleted_by_sender);
-		$criteria->compare('deleted_by_taker',$this->deleted_by_taker);
+		$criteria->compare('forum_id',$this->forum_id);
+		$criteria->compare('parent',$this->parent);
+		$criteria->compare('name',$this->name,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
-
-    public function setDeleted(){
-        $this->deleted = 1;
-        $this->save();
-    }
-
-    public function setReaded(){
-        $this->readed = 1;
-        $this->save();
-    }
 }

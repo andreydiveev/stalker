@@ -10,6 +10,7 @@
  * @property integer $price
  * @property integer $damage
  * @property integer $base_reloading_time
+ * @property integer $level
  *
  * The followings are the available model relations:
  * @property ArmsType $type
@@ -43,12 +44,12 @@ class Arms extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('type_id, name, price', 'required'),
+			array('type_id, name, price, level', 'required'),
 			array('type_id, price, damage, base_reloading_time', 'numerical', 'integerOnly'=>true),
 			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, type_id, name, price, damage, base_reloading_time', 'safe', 'on'=>'search'),
+			array('id, type_id, name, price, level, damage, base_reloading_time', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -61,6 +62,7 @@ class Arms extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'type' => array(self::BELONGS_TO, 'ArmsType', 'type_id'),
+            'level_' => array(self::BELONGS_TO, 'Levels', 'level'),
 			'userArms' => array(self::HAS_MANY, 'UserArms', 'arms_id'),
 		);
 	}
@@ -77,6 +79,7 @@ class Arms extends CActiveRecord
 			'price' => 'Price',
 			'damage' => 'Damage',
             'base_reloading_time' => 'Base Reloading Time',
+            'level' => 'Level',
 		);
 	}
 
@@ -97,6 +100,7 @@ class Arms extends CActiveRecord
 		$criteria->compare('price',$this->price);
 		$criteria->compare('damage',$this->damage);
         $criteria->compare('base_reloading_time',$this->base_reloading_time);
+        $criteria->compare('level',$this->level);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

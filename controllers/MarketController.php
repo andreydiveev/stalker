@@ -2,6 +2,15 @@
 
 class MarketController extends Controller
 {
+    protected function beforeAction()
+    {
+        if(!Yii::app()->user->isGuest){
+            Yii::app()->user->setArea(null);
+        }
+
+        return true;
+    }
+
 	public function actionIndex()
 	{
         /**

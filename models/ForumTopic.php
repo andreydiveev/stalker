@@ -1,28 +1,23 @@
 <?php
 
 /**
- * This is the model class for table "user_message".
+ * This is the model class for table "forum_topic".
  *
- * The followings are the available columns in table 'user_message':
+ * The followings are the available columns in table 'forum_topic':
  * @property integer $id
- * @property integer $from
- * @property integer $to
- * @property string $text
- * @property integer $readed
- * @property integer $date
- * @property integer $deleted_by_sender
- * @property integer $deleted_by_taker
+ * @property integer $section_id
+ * @property string $name
  *
  * The followings are the available model relations:
- * @property User $from0
- * @property User $to0
+ * @property ForumMessage[] $forumMessages
+ * @property ForumSection $section
  */
-class UserMessage extends CActiveRecord
+class ForumTopic extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return UserMessage the static model class
+	 * @return ForumTopic the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -34,7 +29,7 @@ class UserMessage extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'user_message';
+		return 'forum_topic';
 	}
 
 	/**
@@ -45,11 +40,12 @@ class UserMessage extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('from, to, text, date', 'required'),
-			array('from, to, readed, date, deleted_by_sender, deleted_by_taker', 'numerical', 'integerOnly'=>true),
+			array('section_id, name', 'required'),
+			array('section_id', 'numerical', 'integerOnly'=>true),
+			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, from, to, text, readed, date, deleted_by_sender, deleted_by_taker', 'safe', 'on'=>'search'),
+			array('id, section_id, name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -61,8 +57,8 @@ class UserMessage extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'sender' => array(self::BELONGS_TO, 'User', 'from'),
-			'taker' => array(self::BELONGS_TO, 'User', 'to'),
+			'forumMessages' => array(self::HAS_MANY, 'ForumMessage', 'topic_id'),
+			'section' => array(self::BELONGS_TO, 'ForumSection', 'section_id'),
 		);
 	}
 
@@ -73,13 +69,8 @@ class UserMessage extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'from' => 'From',
-			'to' => 'To',
-			'text' => 'Text',
-			'readed' => 'Readed',
-			'date' => 'Date',
-			'deleted_by_sender' => 'Deleted By Sender',
-			'deleted_by_taker' => 'Deleted By Taker',
+			'section_id' => 'Section',
+			'name' => 'Name',
 		);
 	}
 
@@ -95,26 +86,11 @@ class UserMessage extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('from',$this->from);
-		$criteria->compare('to',$this->to);
-		$criteria->compare('text',$this->text,true);
-		$criteria->compare('readed',$this->readed);
-		$criteria->compare('date',$this->date);
-		$criteria->compare('deleted_by_sender',$this->deleted_by_sender);
-		$criteria->compare('deleted_by_taker',$this->deleted_by_taker);
+		$criteria->compare('section_id',$this->section_id);
+		$criteria->compare('name',$this->name,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
 		));
 	}
-
-    public function setDeleted(){
-        $this->deleted = 1;
-        $this->save();
-    }
-
-    public function setReaded(){
-        $this->readed = 1;
-        $this->save();
-    }
 }
