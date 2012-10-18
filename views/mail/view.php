@@ -20,17 +20,15 @@ $this->menu=array(
 ($incoming)?array_push($this->menu, array('label'=>'Ответить', 'url'=>array('/mail/to/'.$model->sender->id))):'';
 ?>
 
-<h1>View UserMessage #<?php echo $model->id; ?></h1>
-
 <div class="view">
-    <?php echo (($incoming)?'from ':'to ') . CHtml::link(
-        CHtml::encode(($incoming)?$model->taker->nick:$model->sender->nick),
-        array('view', 'id'=>$model->id)
-    ); ?>
+    <?php echo ($incoming)?'from ':'to ';?>
+    <?php ($incoming)?$nick = $model->sender->nick:$nick = $model->taker->nick; ?>
+    <?php ($incoming)?$reply_id = $model->sender->nick:$reply_id = $model->taker->nick; ?>
+    <?php echo $nick;?>
     <br />
 
     <?php echo CHtml::encode($model->text); ?>
     <br />
-
-
 </div>
+
+<?php echo $this->renderPartial('_form', array('model'=>$new_message)); ?>

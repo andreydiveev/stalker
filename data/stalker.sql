@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Хост: localhost
--- Время создания: Окт 16 2012 г., 14:56
+-- Время создания: Окт 18 2012 г., 16:00
 -- Версия сервера: 5.5.24
 -- Версия PHP: 5.3.10-1ubuntu3.4
 
@@ -58,45 +58,47 @@ CREATE TABLE IF NOT EXISTS `arms` (
   `price` int(11) NOT NULL,
   `damage` int(11) NOT NULL DEFAULT '10',
   `base_reloading_time` int(11) NOT NULL DEFAULT '2',
+  `level` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `type_id` (`type_id`)
+  KEY `type_id` (`type_id`),
+  KEY `level` (`level`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=36 ;
 
 --
 -- Дамп данных таблицы `arms`
 --
 
-INSERT INTO `arms` (`id`, `type_id`, `name`, `price`, `damage`, `base_reloading_time`) VALUES
-(4, 2, 'Охотничий нож', 100, 10, 2),
-(7, 4, 'Обрез', 100, 10, 2),
-(8, 4, 'Охотничье ружьё', 100, 10, 2),
-(9, 4, 'Чейзер 13', 100, 10, 2),
-(10, 4, 'СПАС 14', 100, 10, 2),
-(11, 4, 'АКМ-74/2У', 100, 10, 2),
-(12, 4, 'Гадюка 5', 100, 10, 2),
-(13, 4, 'АКМ-74/2', 100, 10, 2),
-(14, 4, 'ИЛ 86', 100, 10, 2),
-(15, 4, 'АС-96/2', 100, 10, 2),
-(16, 4, 'ТРс-301', 100, 10, 2),
-(17, 4, 'СГИ-5к', 100, 10, 2),
-(18, 4, 'Гром-С14', 100, 10, 2),
-(19, 4, 'ГП-37', 100, 10, 2),
-(20, 4, 'СА "Лавина"', 100, 10, 2),
-(21, 4, 'ФТ 200М', 100, 10, 2),
-(22, 4, 'РП-74', 100, 10, 2),
-(23, 4, 'Винтарь-ВС', 100, 10, 2),
-(24, 4, 'СВДм-2', 100, 10, 2),
-(25, 4, 'СВУмк-2', 100, 10, 2),
-(26, 4, 'ЭМ1', 100, 10, 2),
-(27, 3, 'ПМм', 100, 10, 2),
-(28, 3, 'Фора-12', 100, 10, 2),
-(29, 3, 'ХПСС-1м', 100, 10, 2),
-(30, 3, 'Марта', 100, 10, 2),
-(31, 3, 'Волкер-П9м', 100, 10, 2),
-(32, 3, 'УДП Компакт', 100, 10, 2),
-(33, 3, 'СИП-т М200', 100, 10, 2),
-(34, 3, 'Кора-919', 100, 10, 2),
-(35, 3, 'Чёрный ястреб', 100, 10, 2);
+INSERT INTO `arms` (`id`, `type_id`, `name`, `price`, `damage`, `base_reloading_time`, `level`) VALUES
+(4, 2, 'Охотничий нож', 100, 10, 2, 1),
+(7, 4, 'Обрез', 100, 10, 2, 1),
+(8, 4, 'Охотничье ружьё', 100, 10, 2, 1),
+(9, 4, 'Чейзер 13', 100, 10, 2, 1),
+(10, 4, 'СПАС 14', 100, 10, 2, 1),
+(11, 4, 'АКМ-74/2У', 100, 10, 2, 1),
+(12, 4, 'Гадюка 5', 100, 10, 2, 1),
+(13, 4, 'АКМ-74/2', 100, 10, 2, 1),
+(14, 4, 'ИЛ 86', 100, 10, 2, 1),
+(15, 4, 'АС-96/2', 100, 10, 2, 1),
+(16, 4, 'ТРс-301', 100, 10, 2, 1),
+(17, 4, 'СГИ-5к', 100, 10, 2, 1),
+(18, 4, 'Гром-С14', 100, 10, 2, 1),
+(19, 4, 'ГП-37', 100, 10, 2, 1),
+(20, 4, 'СА "Лавина"', 100, 10, 2, 1),
+(21, 4, 'ФТ 200М', 100, 10, 2, 1),
+(22, 4, 'РП-74', 100, 10, 2, 1),
+(23, 4, 'Винтарь-ВС', 100, 10, 2, 1),
+(24, 4, 'СВДм-2', 100, 10, 2, 1),
+(25, 4, 'СВУмк-2', 100, 10, 2, 1),
+(26, 4, 'ЭМ1', 100, 10, 2, 1),
+(27, 3, 'ПМм', 100, 10, 2, 1),
+(28, 3, 'Фора-12', 100, 10, 2, 1),
+(29, 3, 'ХПСС-1м', 100, 10, 2, 1),
+(30, 3, 'Марта', 100, 10, 2, 1),
+(31, 3, 'Волкер-П9м', 100, 10, 2, 1),
+(32, 3, 'УДП Компакт', 100, 10, 2, 1),
+(33, 3, 'СИП-т М200', 100, 10, 2, 1),
+(34, 3, 'Кора-919', 100, 10, 2, 1),
+(35, 3, 'Чёрный ястреб', 100, 10, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -238,6 +240,65 @@ CREATE TABLE IF NOT EXISTS `equipment_type` (
 INSERT INTO `equipment_type` (`id`, `name`, `slot_id`) VALUES
 (1, 'Шлемы', 1),
 (2, 'Бронежелеты', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `forum`
+--
+
+CREATE TABLE IF NOT EXISTS `forum` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `forum_message`
+--
+
+CREATE TABLE IF NOT EXISTS `forum_message` (
+  `id` int(11) NOT NULL,
+  `topic_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `text` text NOT NULL,
+  `date` int(11) NOT NULL,
+  `deleted` int(11) NOT NULL DEFAULT '0',
+  `banned` int(11) NOT NULL DEFAULT '0',
+  KEY `topic_id` (`topic_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `forum_section`
+--
+
+CREATE TABLE IF NOT EXISTS `forum_section` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `forum_id` int(11) NOT NULL,
+  `parent` int(11) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  KEY `id` (`id`),
+  KEY `parent` (`parent`),
+  KEY `forum_id` (`forum_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `forum_topic`
+--
+
+CREATE TABLE IF NOT EXISTS `forum_topic` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `section_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `section_id` (`section_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -442,16 +503,15 @@ CREATE TABLE IF NOT EXISTS `user` (
   `cash` int(11) NOT NULL DEFAULT '0',
   `alive` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 --
 -- Дамп данных таблицы `user`
 --
 
 INSERT INTO `user` (`id`, `email`, `password`, `nick`, `reg_date`, `last_activity`, `last_beaten`, `last_beaten_hp`, `total_time`, `frag`, `squad`, `expo`, `level`, `current_hp`, `current_area`, `cash`, `alive`) VALUES
-(1, 'admin12@ya.ru', 'e10adc3949ba59abbe56e057f20f883e', 'Admin', 1348471986, 1350414253, 1350413671, 90, 0, 0, NULL, 0, 1, 200, 1, 8350, 1),
-(2, 'admin@stalker.ru', '4297f44b13955235245b2497399d7a93', 'AAd', 1348472004, 1350424544, 1350029382, -2, 0, 0, NULL, 4000, 1, 200, 1, 95, 1),
-(4, 'a@ya.ru', '4297f44b13955235245b2497399d7a93', 'a', 1348840372, 1348840469, NULL, NULL, 0, 0, NULL, 0, 1, 0, 2, 0, 0);
+(5, 'admin@stalker.local', '4297f44b13955235245b2497399d7a93', 'Admin', 1350592361, 1350597565, 0, NULL, 0, 0, NULL, 0, 1, 200, NULL, 0, 1),
+(6, 'moderator@stalker.local', '4297f44b13955235245b2497399d7a93', 'Moderator', 1350592952, 1350601229, 0, NULL, 0, 0, NULL, 0, 1, 200, NULL, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -470,7 +530,7 @@ CREATE TABLE IF NOT EXISTS `user_arms` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `arms_id` (`arms_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=56 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=54 ;
 
 --
 -- Дамп данных таблицы `user_arms`
@@ -482,11 +542,7 @@ INSERT INTO `user_arms` (`id`, `arms_id`, `user_id`, `armed`, `ext_damage`, `ext
 (41, 4, NULL, 0, 0, 0, 0),
 (42, 4, NULL, 0, 0, 0, 0),
 (43, 4, NULL, 0, 0, 0, 0),
-(47, 4, NULL, 0, 0, 0, 0),
-(48, 4, 2, 0, 0, 0, 0),
-(49, 4, 2, 0, 0, 0, 0),
-(50, 4, 2, 1, 0, 0, 1350058531),
-(53, 4, 1, 1, 0, 0, 1349947039);
+(47, 4, NULL, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -513,11 +569,7 @@ CREATE TABLE IF NOT EXISTS `user_equipment` (
 
 INSERT INTO `user_equipment` (`id`, `user_id`, `slot_id`, `equipment_id`, `equipped`, `ext_armor`) VALUES
 (2, NULL, 1, 1, 0, 0),
-(3, 2, 1, 1, 1, 0),
-(8, NULL, 2, 2, 0, 0),
-(9, 2, 2, 2, 1, 0),
-(10, 2, 2, 2, 0, 0),
-(11, 1, 2, 2, 0, 0);
+(8, NULL, 2, 2, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -533,220 +585,6 @@ CREATE TABLE IF NOT EXISTS `user_log` (
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=243 ;
 
---
--- Дамп данных таблицы `user_log`
---
-
-INSERT INTO `user_log` (`id`, `user_id`, `message`) VALUES
-(35, 1, 'You wounded [AAd] by 110'),
-(36, 2, 'You wound [Admin] by 110'),
-(37, 1, 'You wounded [AAd] by 10'),
-(38, 2, 'You wound [Admin] by 10'),
-(39, 1, 'You wounded [AAd] by 10'),
-(40, 2, 'You wound [Admin] by 10'),
-(41, 1, 'You wounded [AAd] by 110'),
-(42, 2, 'You wound [Admin] by 110'),
-(43, 1, 'You wounded [AAd] by 10'),
-(44, 2, 'You wound [Admin] by 10'),
-(45, 1, 'You wounded [AAd] by 10'),
-(46, 2, 'You wound [Admin] by 10'),
-(47, 1, 'You wounded [AAd] by 10'),
-(48, 2, 'You wound [Admin] by 10'),
-(49, 1, 'You wounded [AAd] by 10'),
-(50, 2, 'You wound [Admin] by 10'),
-(51, 1, 'You killed by [AAd]'),
-(52, 2, 'You kill [Admin]'),
-(53, 1, 'You wounded [AAd] by 110'),
-(54, 2, 'You wound [Admin] by 110'),
-(55, 1, 'You wounded [AAd] by 10'),
-(56, 2, 'You wound [Admin] by 10'),
-(57, 1, 'You wounded [AAd] by 10'),
-(58, 2, 'You wound [Admin] by 10'),
-(59, 1, 'You wounded [AAd] by 10'),
-(60, 2, 'You wound [Admin] by 10'),
-(61, 1, 'You wounded [AAd] by 10'),
-(62, 2, 'You wound [Admin] by 10'),
-(63, 1, 'You wounded [AAd] by 10'),
-(64, 2, 'You wound [Admin] by 10'),
-(65, 1, 'You wounded [AAd] by 10'),
-(66, 2, 'You wound [Admin] by 10'),
-(67, 1, 'You wounded [AAd] by 10'),
-(68, 2, 'You wound [Admin] by 10'),
-(69, 1, 'You wounded [AAd] by 110'),
-(70, 2, 'You wound [Admin] by 110'),
-(71, 1, 'You wounded [AAd] by 110'),
-(72, 2, 'You wound [Admin] by 110'),
-(73, 1, 'You killed by [AAd]'),
-(74, 2, 'You kill [Admin]'),
-(75, 2, 'You wounded [AAd] by 109'),
-(76, 2, 'You wound [AAd] by 109'),
-(77, 2, 'You killed by [AAd]'),
-(78, 2, 'You kill [AAd]'),
-(79, 2, 'You wound [Mob2] by 110'),
-(80, 2, 'You wound [Mob2] by 110'),
-(81, 2, 'You wound [Mob1] by 110'),
-(82, 2, 'You wound [Mob2] by 110'),
-(83, 2, 'You wound [Mob2] by 10'),
-(84, 2, 'You wound [Mob2] by 10'),
-(85, 2, 'You wound [Mob2] by 10'),
-(86, 2, 'You wound [Mob2] by 10'),
-(87, 2, 'You wound [Mob2] by 90'),
-(88, 2, 'You wound [Mob2] by 10'),
-(89, 2, 'You wound [Mob2] by 10'),
-(90, 1, 'You wounded [AAd] by 10'),
-(91, 2, 'You wound [Admin] by 10'),
-(92, 1, 'You wounded [AAd] by 10'),
-(93, 2, 'You wound [Admin] by 10'),
-(94, 2, 'You wound [Mob2] by 10'),
-(95, 2, 'You wound [Mob2] by 10'),
-(96, 2, 'You wound [Mob2] by 110'),
-(97, 2, 'You wound [Mob2] by -40'),
-(98, 2, 'You wound [Mob2] by 10'),
-(99, 2, 'You wound [Mob2] by 10'),
-(100, 2, 'You wound [Mob2] by 10'),
-(101, 2, 'You wound [Mob2] by 10'),
-(102, 2, 'You wound [Mob2] by 10'),
-(103, 2, 'You wound [Mob2] by 10'),
-(104, 2, 'You wound [Mob2] by 10'),
-(105, 2, 'You wound [Mob2] by 10'),
-(106, 2, 'You wound [Mob2] by 10'),
-(107, 2, 'You wound [Mob2] by 10'),
-(108, 2, 'You wound [Mob2] by 10'),
-(109, 2, 'You wound [Mob2] by 10'),
-(110, 2, 'You wound [Mob2] by 10'),
-(111, 1, 'You wounded [AAd] by 10'),
-(112, 2, 'You wound [Admin] by 10'),
-(113, 2, 'You wound [Mob1] by 10'),
-(114, 2, 'You wound [Mob1] by 10'),
-(115, 2, 'You wound [Mob1] by 10'),
-(116, 2, 'You wound [Mob1] by 10'),
-(117, 2, 'You wound [Mob1] by 10'),
-(118, 2, 'You wound [Mob1] by 10'),
-(119, 2, 'You wound [Mob1] by 10'),
-(120, 1, 'You wounded [AAd] by 10'),
-(121, 2, 'You wound [Admin] by 10'),
-(122, 2, 'You wound [Mob1] by 10'),
-(123, 2, 'You wound [Mob1] by 10'),
-(124, 1, 'You wounded [AAd] by 110'),
-(125, 2, 'You wound [Admin] by 110'),
-(126, 1, 'You wounded [AAd] by 10'),
-(127, 2, 'You wound [Admin] by 10'),
-(128, 1, 'You wounded [AAd] by 10'),
-(129, 2, 'You wound [Admin] by 10'),
-(130, 2, 'You wound [Mob1] by 10'),
-(131, 2, 'You wound [Mob1] by 10'),
-(132, 2, 'You wound [Mob1] by 10'),
-(133, 2, 'You wound [Mob1] by 10'),
-(134, 2, 'You wound [Mob1] by 10'),
-(135, 2, 'You wound [Mob1] by 10'),
-(136, 2, 'You wound [Mob1] by 110'),
-(137, 2, 'You wound [Mob1] by 10'),
-(138, 2, 'You wound [Mob1] by 10'),
-(139, 2, 'You wound [Mob1] by 10'),
-(140, 2, 'You wound [Mob1] by 110'),
-(141, 2, 'You wound [Mob1] by 10'),
-(142, 2, 'You wound [Mob1] by 10'),
-(143, 2, 'You wound [Mob1] by 10'),
-(144, 2, 'You wound [Mob1] by 10'),
-(145, 2, 'You wound [Mob1] by 10'),
-(146, 2, 'You wound [Mob1] by 10'),
-(147, 2, 'You wound [Mob1] by 10'),
-(148, 2, 'You wound [Mob1] by 110'),
-(149, 2, 'You wound [Mob1] by 10'),
-(150, 2, 'You wound [Mob1] by 10'),
-(151, 2, 'You wound [Mob1] by 110'),
-(152, 2, 'You wound [Mob1] by 10'),
-(153, 2, 'You wound [Mob1] by 10'),
-(154, 2, 'You kill [Mob1]'),
-(155, 1, 'You wounded [AAd] by 10'),
-(156, 2, 'You wound [Admin] by 10'),
-(157, 2, 'You wound [Mob1] by 110'),
-(158, 2, 'You wound [Mob1] by 10'),
-(159, 2, 'You wound [Mob1] by 10'),
-(160, 2, 'You wound [Mob1] by 10'),
-(161, 2, 'You wound [Mob1] by 10'),
-(162, 2, 'You kill [Mob1]'),
-(163, 2, 'You wound [Mob1] by 110'),
-(164, 2, 'You wound [Mob1] by 10'),
-(165, 2, 'You wound [Mob1] by 10'),
-(166, 2, 'You wound [Mob1] by 10'),
-(167, 2, 'You wound [Mob1] by 10'),
-(168, 2, 'You kill [Mob1]'),
-(169, 2, 'You wound [Mob1] by 110'),
-(170, 2, 'You wound [Mob1] by 10'),
-(171, 2, 'You wound [Mob1] by 10'),
-(172, 2, 'You wound [Mob1] by 110'),
-(173, 2, 'You wound [Mob1] by 10'),
-(174, 2, 'You wound [Mob1] by 10'),
-(175, 2, 'You wound [Mob1] by 10'),
-(176, 2, 'You kill [Mob1]'),
-(177, 2, 'You wound [Mob2] by 10'),
-(178, 2, 'You wound [Mob1] by 110'),
-(179, 2, 'You wound [Mob1] by 10'),
-(180, 2, 'You wound [Mob1] by 10'),
-(181, 2, 'You wound [Mob1] by 10'),
-(182, 2, 'You wound [Mob1] by 10'),
-(183, 2, 'You wound [Mob1] by 10'),
-(184, 2, 'You kill [Mob1]'),
-(185, 2, 'You wound [Mob1] by 110'),
-(186, 2, 'You wound [Mob1] by 10'),
-(187, 2, 'You wound [Mob1] by 10'),
-(188, 2, 'You wound [Mob1] by 10'),
-(189, 2, 'You wound [Mob1] by 10'),
-(190, 2, 'You wound [Mob1] by 10'),
-(191, 2, 'You kill [Mob1]'),
-(192, 2, 'You wound [Mob1] by 110'),
-(193, 2, 'You wound [Mob1] by 10'),
-(194, 2, 'You wound [Mob1] by 10'),
-(195, 2, 'You wound [Mob1] by 10'),
-(196, 2, 'You kill [Mob1]'),
-(197, 2, 'You wound [Mob2] by 110'),
-(198, 2, 'You wound [Mob2] by 10'),
-(199, 2, 'You wound [Mob2] by 10'),
-(200, 2, 'You wound [Mob2] by 10'),
-(201, 2, 'You wound [Mob2] by 10'),
-(202, 2, 'You wound [Mob2] by 10'),
-(203, 2, 'Expo +1000'),
-(204, 2, 'You kill [Mob2]'),
-(205, 2, 'You wound [Mob1] by 110'),
-(206, 2, 'You wound [Mob1] by 10'),
-(207, 2, 'You wound [Mob1] by 10'),
-(208, 2, 'You wound [Mob1] by 10'),
-(209, 2, 'You wound [Mob1] by 10'),
-(210, 2, 'You wound [Mob1] by 10'),
-(211, 2, 'Expo +1000'),
-(212, 2, 'You kill [Mob1]'),
-(213, 2, 'You wound [Mob1] by 110'),
-(214, 2, 'You wound [Mob1] by 10'),
-(215, 2, 'You wound [Mob1] by 10'),
-(216, 2, 'You wound [Mob1] by 10'),
-(217, 2, 'You wound [Mob1] by 10'),
-(218, 2, 'Expo +1000'),
-(219, 2, 'You kill [Mob1]'),
-(220, 2, 'You wound [Mob2] by 10'),
-(221, 2, 'You wound [Mob2] by 10'),
-(222, 2, 'You wound [Mob2] by 110'),
-(223, 2, 'You wound [Mob2] by 10'),
-(224, 2, 'You wound [Mob1] by 10'),
-(225, 2, 'You wound [Mob1] by 10'),
-(226, 2, 'You wound [Mob1] by 110'),
-(227, 2, 'You wound [Mob1] by 10'),
-(228, 2, 'You wound [Mob2] by 10'),
-(229, 2, 'You wound [Mob1] by 10'),
-(230, 2, 'Expo +1000'),
-(231, 2, 'You kill [Mob1]'),
-(232, 2, 'You wound [Mob2] by 10'),
-(233, 2, 'You wound [Mob2] by 10'),
-(234, 2, 'You wound [Mob2] by 110'),
-(235, 2, 'You wound [Mob2] by 10'),
-(236, 2, 'You wound [Mob2] by 10'),
-(237, 2, 'You wound [Mob2] by 10'),
-(238, 2, 'You wound [Mob2] by 10'),
-(239, 2, 'Expo +1000'),
-(240, 2, 'You kill [Mob2]'),
-(241, 1, 'You wounded [AAd] by 110'),
-(242, 2, 'You wound [Admin] by 110');
-
 -- --------------------------------------------------------
 
 --
@@ -760,22 +598,23 @@ CREATE TABLE IF NOT EXISTS `user_message` (
   `text` text NOT NULL,
   `readed` int(11) NOT NULL DEFAULT '0',
   `date` int(11) NOT NULL,
-  `deleted` int(11) NOT NULL DEFAULT '0',
+  `deleted_by_sender` int(11) NOT NULL DEFAULT '0',
+  `deleted_by_taker` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `from` (`from`),
   KEY `to` (`to`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=22 ;
 
 --
 -- Дамп данных таблицы `user_message`
 --
 
-INSERT INTO `user_message` (`id`, `from`, `to`, `text`, `readed`, `date`, `deleted`) VALUES
-(1, 1, 2, '1 to 2', 0, 123, 1),
-(2, 2, 1, 'efeefe', 1, 1350414194, 0),
-(3, 2, 1, 'wfwefwefwfwefwfwfwf', 1, 1350417048, 0),
-(4, 2, 1, 'ewfffffffffffffffffffffffffffffffffffffffffffffffffff', 1, 1350417087, 0),
-(5, 2, 1, 'wefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwefwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwfwf', 0, 1350417105, 1);
+INSERT INTO `user_message` (`id`, `from`, `to`, `text`, `readed`, `date`, `deleted_by_sender`, `deleted_by_taker`) VALUES
+(12, 5, 6, 'admin to moder', 1, 1350597578, 0, 0),
+(13, 5, 6, 'to moder again', 1, 1350598108, 0, 0),
+(14, 6, 5, 're:2moder\r\n\r\ntoAdmin from moder', 1, 1350598140, 0, 0),
+(15, 5, 6, 'wefwe', 1, 1350598157, 1, 0),
+(21, 6, 5, 'from Moder 2 Admin - destined for deletion by sender ', 1, 1350599193, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -847,6 +686,25 @@ ALTER TABLE `arms_type`
 --
 ALTER TABLE `equipment`
   ADD CONSTRAINT `equipment_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `equipment_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `forum_message`
+--
+ALTER TABLE `forum_message`
+  ADD CONSTRAINT `forum_message_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `forum_topic` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `forum_section`
+--
+ALTER TABLE `forum_section`
+  ADD CONSTRAINT `forum_section_ibfk_2` FOREIGN KEY (`forum_id`) REFERENCES `forum` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `forum_section_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `forum_section` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Ограничения внешнего ключа таблицы `forum_topic`
+--
+ALTER TABLE `forum_topic`
+  ADD CONSTRAINT `forum_topic_ibfk_1` FOREIGN KEY (`section_id`) REFERENCES `forum_section` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `mob`

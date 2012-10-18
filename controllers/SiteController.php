@@ -147,12 +147,12 @@ class SiteController extends Controller
                 Yii::app()->user->setArea($area->id);
 
                 $this->render('area', array('area'=>$area));
-                Yii::app()->end();
             }
 
+        }else{
+            $this->redirect('/site/zone');
         }
 
-        $this->redirect('/site/zone');
     }
 
     public function actionRegistration()

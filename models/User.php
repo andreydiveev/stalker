@@ -312,4 +312,13 @@ class User extends CActiveRecord
 
         return $up;
     }
+
+    public function upCash($info){
+        $up = 1000;
+
+        $this->cash += $up;
+        $this->save();
+
+        return $up;
+    }
 }

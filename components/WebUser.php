@@ -239,6 +239,10 @@ class WebUser extends CWebUser
         return $this->model()->upExpo($info);
     }
 
+    public function upCash($info){
+        return $this->model()->upCash($info);
+    }
+
     protected function model(){
         if(Yii::app()->user->isGuest){
             return false;
