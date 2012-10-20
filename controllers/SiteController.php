@@ -27,6 +27,43 @@ class SiteController extends Controller
 	 */
 	public function actionIndex()
 	{
+        //Yii::app()->RediskaConnection->getConnection()->set('key', 'value');
+        //echo Yii::app()->RediskaConnection->getConnection()->get('key');
+
+        //$Rediska = Yii::app()->RediskaConnection;//new Rediska($options);
+
+        // Initialize list
+        $list = Yii::app()->RediskaConnection->getList('list');
+
+        // Add two elements to list
+        $list[] = 'first element';
+        $list[] = 'second element';
+
+        // Get element with index 1
+        echo $list[1]; #=> 'second element';
+
+        // Set element with index 0
+        $list[0] = 'new first element';
+
+        // Get elements count
+        echo count($list); #=> 2
+
+        // Check if element with index 0 is present
+        echo isset($list[0]); #=> true
+
+        // Iterate list
+        foreach($list as $element) {
+            echo $element;
+        }
+
+
+        // Sharding
+        /*$userOnShard = new UserOnShard();
+        $userOnShard->nick      = 'userOnShard1';
+        $userOnShard->email     = 'user1@shard1.local';
+        $userOnShard->password  = 'userOnShard_password';
+        $userOnShard->save();*/
+
 		// renders the view file 'protected/views/site/index.php'
 		// using the default layout 'protected/views/layouts/main.php'
 		$this->render('index');
