@@ -27,35 +27,49 @@ class SiteController extends Controller
 	 */
 	public function actionIndex()
 	{
-        //Yii::app()->RediskaConnection->getConnection()->set('key', 'value');
-        //echo Yii::app()->RediskaConnection->getConnection()->get('key');
+//        Yii::app()->RediskaConnection->getConnection()->set('key', 'value');
+//        //echo Yii::app()->RediskaConnection->getConnection()->get('key');
+//
+//        $rediska = Yii::app()->RediskaConnection->getConnection();//new Rediska($options);
+//
+//        // Initialize key with name 'keyName'
+//        $key = new Rediska_Key('keyName');
+//
+//        // Initialize key on server 'server1'
+//        require_once 'Rediska/Key.php';
+//        $key = new Rediska_Key('keyName', array(
+//            'serverAlias' => 'server1'
+//        ));
+//
+//        // Set value
+//        $key->setValue('value');
+//
+//        // Print value
+//        print $key; #=> value
+//
+//        // Initialize Set with name 'setKeyName' and specified Rediska instance
+//        $set = new Rediska_Key_Set('setKeyName', array('rediska' => $rediska));
+//
+//        // Print all elements
+//        foreach($set as $element) {
+//            print $element;
+//        }
 
-        //$Rediska = Yii::app()->RediskaConnection;//new Rediska($options);
+        $rediska = Yii::app()->RediskaConnection->getConnection();
+        // Создаем нового пользователя
+        $user = new UserHash(1);
+        $user->id = 1;
+        $user['name'] = 'Вася'; // Можно обращаться к полям как к ключам массива
+        $user->friendsCount = 0;
 
-        // Initialize list
-        $list = Yii::app()->RediskaConnection->getList('list');
+        // Увеличиваем счетчик друзей
+        $user = new UserHash(1);
+        $user->increment('friendsCount');
 
-        // Add two elements to list
-        $list[] = 'first element';
-        $list[] = 'second element';
-
-        // Get element with index 1
-        echo $list[1]; #=> 'second element';
-
-        // Set element with index 0
-        $list[0] = 'new first element';
-
-        // Get elements count
-        echo count($list); #=> 2
-
-        // Check if element with index 0 is present
-        echo isset($list[0]); #=> true
-
-        // Iterate list
-        foreach($list as $element) {
-            echo $element;
+        // Получаем данные пользователя
+        foreach($user as $field => $value) {
+            print "$field => $value";
         }
-
 
         // Sharding
         /*$userOnShard = new UserOnShard();
