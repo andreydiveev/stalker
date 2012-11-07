@@ -28,7 +28,7 @@ $config = array(
 			//'ipFilters'=>array('127.0.0.1','::1'),
 		),
 
-
+        'android'=>array(),
 	),
 
 	// application components
