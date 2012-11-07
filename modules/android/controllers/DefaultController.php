@@ -8,6 +8,7 @@ class DefaultController extends Controller
 		$this->render('response', array(
             'status'    => 'success',
             'post_var'  => Yii::app()->request->getPost('post_var'),
+            'get_var'  => Yii::app()->request->getParam('get_var'),
         ));
 	}
 
