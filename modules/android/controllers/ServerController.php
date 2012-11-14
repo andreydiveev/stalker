@@ -18,6 +18,21 @@ class ServerController extends Controller
         $this->render('index');
     }
 
+    public function actionStart()
+    {
+
+        if(isset($_POST['port']) && is_numeric($_POST['port'])){
+            $this->layout = false;
+            $out = array();
+            exec('pwd', $out);
+            $path = $out[0];
+            exec('../project/yiic start --port='.(int)$_POST['port'],$out);
+            print_r($out);
+        }
+
+        $this->render('start');
+    }
+
 	// Uncomment the following methods and override them if needed
 	/*
 	public function filters()
