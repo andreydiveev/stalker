@@ -2,29 +2,33 @@
 /* @var $this MailController */
 /* @var $model UserMessage */
 
+($model->sender->id == Yii::app()->user->id)?$incoming = false:$incoming = true;
+
 $this->breadcrumbs=array(
-	'User Messages'=>array('index'),
-	$model->id,
+    'Почта' => array('index'),
+	($incoming)?'Входящие':'Отправленные' => ($incoming)?array('incoming'):array('outgoing'),
+    date('d.m.Y H:i:s', CHtml::encode($model->date)),
 );
 
 $this->menu=array(
-	array('label'=>'List UserMessage', 'url'=>array('index')),
-	array('label'=>'Create UserMessage', 'url'=>array('create')),
-	array('label'=>'Delete UserMessage', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage UserMessage', 'url'=>array('admin')),
+    array('label'=>'Входящие', 'url'=>array('/mail/incoming')),
+    array('label'=>'Отправленные', 'url'=>array('/mail/outgoing')),
+    array('label'=>'Удалить', 'url'=>array('/mail/delete/'.$model->id)),
 );
+
+
+($incoming)?array_push($this->menu, array('label'=>'Ответить', 'url'=>array('/mail/to/'.$model->sender->id))):'';
 ?>
 
-<h1>View UserMessage #<?php echo $model->id; ?></h1>
+<div class="view">
+    <?php echo ($incoming)?'from ':'to ';?>
+    <?php ($incoming)?$nick = $model->sender->nick:$nick = $model->taker->nick; ?>
+    <?php ($incoming)?$reply_id = $model->sender->nick:$reply_id = $model->taker->nick; ?>
+    <?php echo $nick;?>
+    <br />
 
-<?php $this->widget('zii.widgets.CDetailView', array(
-	'data'=>$model,
-	'attributes'=>array(
-		'id',
-		'from',
-		'to',
-		'text',
-		'readed',
-		'date',
-	),
-)); ?>
+    <?php echo CHtml::encode($model->text); ?>
+    <br />
+</div>
+
+<?php echo $this->renderPartial('_form', array('model'=>$new_message)); ?>

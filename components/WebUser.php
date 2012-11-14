@@ -175,6 +175,14 @@ class WebUser extends CWebUser
         return $this->loadModel(Yii::app()->user->id)->cash;
     }
 
+    public function incomingMessages(){
+        return $this->loadModel(Yii::app()->user->id)->incomingMessages;
+    }
+
+    public function outgoingMessages(){
+        return $this->loadModel(Yii::app()->user->id)->outgoingMessages;
+    }
+
     public function getLog(array $params = null){
 
         $limit = isset($params['limit'])?(int)$params['limit']:UserLog::BASE_LOG_DISPLAY_LIMIT;
@@ -229,6 +237,10 @@ class WebUser extends CWebUser
 
     public function upExpo($info){
         return $this->model()->upExpo($info);
+    }
+
+    public function upCash($info){
+        return $this->model()->upCash($info);
     }
 
     protected function model(){

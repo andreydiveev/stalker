@@ -4,17 +4,16 @@
 ?>
 
 <div class="view">
+    <?php ($data->sender->id == Yii::app()->user->id)?$incoming = false:$incoming = true; ?>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
+    <?php ($incoming)?$nick = $data->sender->nick:$nick = $data->taker->nick?>
+    <?php $link = CHtml::link(CHtml::encode($nick),array('view', 'id'=>$data->id));?>
+    <?php ($data->readed == 0 && $data->sender->id != Yii::app()->user->id)?$link = '<b>'.$link.'</b>':'';?>
+    <?php echo (($incoming)?'from ':'to ') . $link; ?>
+    <?php echo date('<b>d.m.Y</b> H:i:s', CHtml::encode($data->date)); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('text')); ?>:</b>
-	<?php echo CHtml::encode($data->text); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('date')); ?>:</b>
-	<?php echo CHtml::encode(date('d.m.Y H:i:s', $data->date)); ?>
+	<?php echo Collection::cutString(CHtml::encode($data->text),20); ?>
 	<br />
 
 

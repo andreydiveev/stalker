@@ -130,11 +130,18 @@ class Mob extends CActiveRecord
         $info->victim_type = 'mob';
         $info->victim_id = $this->id;
 
-        $increase = Yii::app()->user->upExpo($info);
+        $expoIncrease = Yii::app()->user->upExpo($info);
+        $cashIncrease = Yii::app()->user->upCash($info);
+
+        /** @TODO add method  */
+        $userLog = new UserLog();
+        $userLog->user_id = Yii::app()->user->id;
+        $userLog->message = 'Expo +'.$expoIncrease;
+        $userLog->save();
 
         $userLog = new UserLog();
         $userLog->user_id = Yii::app()->user->id;
-        $userLog->message = 'Expo +'.$increase;
+        $userLog->message = 'Cash +'.$cashIncrease;
         $userLog->save();
 
         if($this->save()){

@@ -2,6 +2,8 @@
     echo '<p style="color:red;font-weight:bold;">'.Yii::app()->user->getFlash('fighting').'<p/>';
 }?>
 
+<?=Yii::app()->session['trace'];?>
+
 <b>Игроки:<b/><br/>
 <?php foreach($area->getAliveUsers() as $player):?>
     <?php if($player->id == Yii::app()->user->id){continue;}?>
