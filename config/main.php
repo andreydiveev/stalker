@@ -28,7 +28,7 @@ $config = array(
 			//'ipFilters'=>array('127.0.0.1','::1'),
 		),
 
-        'android'=>array(),
+        'android'=>array('param'=>'1'),
 	),
 
 	// application components
@@ -89,6 +89,7 @@ $config = array(
 	'params'=>array(
 		// this is used in contact page
 		'adminEmail'=>'webmaster@example.com',
+        'server_running' => 0,
 	),
 );
 

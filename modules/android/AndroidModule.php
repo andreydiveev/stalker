@@ -2,8 +2,15 @@
 
 class AndroidModule extends CWebModule
 {
+
+    public $_config = array();
+
 	public function init()
 	{
+        $config = require dirname(__FILE__).DIRECTORY_SEPARATOR.'/config/main.php';
+        //var_dump($config);
+        $this->configure($config);
+
 		// this method is called when the module is being created
 		// you may place code here to customize the module or the application
 
@@ -12,7 +19,21 @@ class AndroidModule extends CWebModule
 			'android.models.*',
 			'android.components.*',
 		));
+
+
 	}
+
+    public function __set($name, $value)
+    {
+        try
+        {
+            parent::__set($name, $value);
+        }
+        catch (CException $e)
+        {
+            $this->_config[$name] = $value;
+        }
+    }
 
 	public function beforeControllerAction($controller, $action)
 	{
