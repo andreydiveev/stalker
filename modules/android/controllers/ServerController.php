@@ -26,8 +26,10 @@ class ServerController extends Controller
             $out = array();
             exec('pwd', $out);
             $path = $out[0];
-            exec('../project/yiic start --port='.(int)$_POST['port'],$out);
+            exec('../project/yiic server start --port='.(int)$_POST['port'],$out);
             print_r($out);
+
+            //print('../project/yiic server start --port='.(int)$_POST['port']);
         }
 
         $this->render('start');
