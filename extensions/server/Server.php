@@ -7,11 +7,12 @@
  * @date 18.11.2012 4:24
  *
  * @todo config
- * @todo socket server
+ * @todo json parese request
  */
 
  require('Daemon.php');
  require('Socket.php');
+ require('Client.php');
  
  class Server extends Daemon{
     
@@ -20,15 +21,118 @@
     public $port = 13031;
     
     protected $socket = null;
+    protected $clients = array();
+    
+    protected $welcome_msg;
     
     
     protected function do_job(){
         
         $this->say("Register new socket...");
-        $this->socket = new Socket($this->host, $this->port);
+        $this->socket = new Socket($this->host, $this->port, $this->log);
         
-        $this->say("Working job unit1...");
+        $this->socket->say("Working job unit1...");
         
+        $this->welcome_msg = "\n".
+            "Welcome to Socket Server!\n" .
+            "Enter 'quit' for close connection.\n".
+            "Enter 'shutdown' fom stop Socket Server."
+        ;
+        
+        $commands = array(
+            'quit',
+            'shutdown',
+            'whoami',
+            'who_online',
+        );
+        
+        do {
+            $read = array();
+            $read[] = $this->socket->resource; 
+            $read = array_merge($read,$this->get_clients_sockets());
+            
+            if(socket_select($read,$write = NULL, $except = NULL, $tv_sec = 5) < 1){
+                continue;
+            }
+            
+            // Handle new Connections
+            if (in_array($this->socket->resource, $read)) {
+                
+                if (($new_socket = socket_accept($this->socket->resource)) === false) {
+                    $this->socket->log("socket_accept() fail: reazon: " . socket_strerror(socket_last_error($this->socket->resource)));
+                    break;
+                }
+                
+                $Client = new Client($new_socket);
+                $Client->id = count($this->clients)+1;
+                $Client->socket = $new_socket;
+                
+                $this->clients[] = $Client;
+                
+                $Client->send($this->welcome_msg);
+                
+                $this->socket->log("New client connected");
+                
+            }
+            
+            // Handle Input
+            foreach ($this->clients as $Client) { // for each client
+                if (in_array($Client->socket, $read)) {
+                    
+                    if (false === ($buf = $Client->read())) {
+                        $this->socket->say("socket_read() falló: razón: ".socket_strerror(socket_last_error($Client->socket)));
+                        break 2;
+                    }
+                    
+                    if (!$buf = trim($buf)) {
+                        continue;
+                    }
+                    
+                    if(strpos($buf, ' ')){
+                        $command_name = substr($buf, 0, strpos($buf, ' '));
+                    }else{
+                        $command_name = $buf;
+                    }
+                    
+                    /*
+                    if ($buf == 'shutdown') {
+                        socket_close($Client->socket); // for each!!
+                        break 2;
+                    }*/
+                    
+                    if(in_array($command_name, $commands)){
+                        $msg = "Command '".$command_name."' given\n";
+                        $command_hendler = $command_name."Command";
+                        $this->$command_hendler($Client);
+                        break;
+                    }else{
+                        $msg = "Unknown command '".$command_name."'\n";
+                    }
+                    
+                    $Client->send($msg);
+                    $Client->send("Client {$Client->id}: Usted dijo '$buf'.\n");
+                    
+                    $this->socket->say($buf);
+                }
+                
+            }
+        } while (true);
+        
+        
+        $this->socket->close();
+        
+        return false;
+    }
+   
+    public function status(){
+        if($this->pid_exists()){
+           $this->say("Running at ".$this->host.":".$this->port);
+        }else{
+           $this->say("Not running");
+        }
+    }
+    
+    protected function test_job(){
         //while (true) {
         //    
         //    // делаем полезную работу
@@ -48,80 +152,55 @@
         //    }   
         //    usleep(Server::WORK_CYCLE_DELAY);
         //}
+    }
+    
+    protected function whoamiCommand($Client){
+        echo "Handler 'whoami' called:\n";
         
-        $sock = $this->socket->resource;
+        $Client->send("Your id: ".$Client->id);
+    }
+    
+    protected function quitCommand($Client){
+        echo "Handler 'quit' called:\n";
         
-        //clients array
-        $clients = array();
+        $Client->disconnect();
+        $this->detach_client_by_id($Client->id);
+    }
+    
+    protected function who_onlineCommand($Client){
+        echo "Handler 'quit' called:\n";
         
-        do {
-            $read = array();
-            $read[] = $sock;
+        $msg = "";
+        foreach($this->clients as $client){
+            $msg .= "- ".$client->id."\n";
+        }
         
-            $read = array_merge($read,$clients);
+        $Client->send($msg);
+    }
+    
+    protected function get_clients_sockets(){
+        $sockets = array();
+        foreach($this->clients as $Client){
+            $sockets[] = $Client->socket;
+        }
         
-            // Set up a blocking call to socket_select
-            if(socket_select($read,$write = NULL, $except = NULL, $tv_sec = 5) < 1)
-            {
-                //    SocketServer::debug("Problem blocking socket_select?");
-                continue;
+        return $sockets;
+    }
+    
+    protected function detach_client_by_id($id){
+        foreach($this->clients as $key => $Client){
+            if($Client->id == $id){
+                unset($this->clients[$key]);
             }
-        
-            // Handle new Connections
-            if (in_array($sock, $read)) {
-        
-                if (($msgsock = socket_accept($sock)) === false) {
-                    echo "socket_accept() falló: razón: " . socket_strerror(socket_last_error($sock)) . "\n";
-                    break;
-                }
-                $clients[] = $msgsock;
-                $key = array_keys($clients, $msgsock);
-                /* Enviar instrucciones. */
-                $msg = "\nBienvenido al Servidor De Prueba de PHP. \n" .
-                    "Usted es el cliente numero: {$key[0]}\n" .
-                    "Para salir, escriba 'quit'. Para cerrar el servidor escriba 'shutdown'.\n";
-                socket_write($msgsock, $msg, strlen($msg));
-        
+        }
+    }
+    
+    protected function get_client_by_id($id){
+        foreach($this->clients as $key => $Client){
+            if($Client->id == $id){
+                unset($this->clients[$key]);
             }
-        
-            // Handle Input
-            foreach ($clients as $key => $client) { // for each client
-                if (in_array($client, $read)) {
-                    if (false === ($buf = socket_read($client, 2048, PHP_NORMAL_READ))) {
-                        echo "socket_read() falló: razón: " . socket_strerror(socket_last_error($client)) . "\n";
-                        break 2;
-                    }
-                    if (!$buf = trim($buf)) {
-                        continue;
-                    }
-                    if ($buf == 'quit') {
-                        unset($clients[$key]);
-                        socket_close($client);
-                        break;
-                    }
-                    if ($buf == 'shutdown') {
-                        socket_close($client);
-                        break 2;
-                    }
-                    $talkback = "Cliente {$key}: Usted dijo '$buf'.\n";
-                    socket_write($client, $talkback, strlen($talkback));
-                    echo "$buf\n";
-                }
-        
-            }
-        } while (true);
-        
-        
-        socket_close($sock);
-        
-        return false;
-   }
-   
-   public function status(){
-       if($this->pid_exists()){
-           $this->say("Running at ".$this->host.":".$this->port);
-       }else{
-           $this->say("Not running");
-       }
-   }
+        }
+    }
+    
  }

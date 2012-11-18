@@ -60,6 +60,18 @@ class ServiceCommand extends CConsoleCommand{
     public function actionMonitor(){
         //var_dump(STDIN);
         echo "Server monitor...\n";
+        
+        if(Yii::app()->server->is_running){
+            $host = Yii::app()->server->host;
+            $port = Yii::app()->server->port;
+            $cmd = "telnet ".$host." ".$port;
+            system($cmd);
+            //echo $cmd."\n";
+            //echo $host."\n";
+            //echo $port."\n";
+        }else{
+            echo "Server not running.\n";
+        }
     }
     
     public function actionLog(){

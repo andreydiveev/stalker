@@ -17,7 +17,7 @@ abstract class Daemon extends CComponent implements Daemonic{
     protected $time_file;
     
     public function init(){
-        //$this->say("Native init...");
+        //$this->say("Native daemon init...");
         
         //umask(0);
         //chdir('/');
@@ -30,6 +30,10 @@ abstract class Daemon extends CComponent implements Daemonic{
         $STDIN = fopen('/dev/null', 'r');
         $this->log = fopen($baseDir.'/log/'.$this->name.'.application.log', 'ab');
         //$STDERR = fopen($baseDir.'/log/error.log', 'ab');
+        
+        set_time_limit(0);
+        error_reporting(E_ALL);  
+        ob_implicit_flush();
         
         //$this->error('Test error');
         
@@ -216,7 +220,9 @@ abstract class Daemon extends CComponent implements Daemonic{
     }
     
     protected function say($phrase, $logging = true){
-        echo "Server: ".$phrase."\n";
+        $phrase = "Server: ".$phrase;
+        
+        echo $phrase."\n";
         
         if($logging){
             $this->log($phrase);
