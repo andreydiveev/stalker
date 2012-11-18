@@ -3,7 +3,7 @@
 class ServerCommand extends CConsoleCommand{
 
     public $host = '127.0.0.1';
-    public $port = 13003;
+    public $port = 13023;
 
     public $status;
 

@@ -82,6 +82,10 @@ $config = array(
 				*/
 			),
 		),
+		
+		'server' => array(
+		    'class' => 'ext.server.Server',
+		),
 	),
 
 	// application-level parameters that can be accessed

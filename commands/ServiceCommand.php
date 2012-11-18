@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Service for manage the Game Server
+ * @author Andrey Diveev <andrey.diveev@gmail.com>
+ * @version 0.1
+ * @date 18.11.2012 4:24
+ */
 class ServiceCommand extends CConsoleCommand{
     public function actionIndex(){
         echo "Welcome to service for manage server!\n";
@@ -26,6 +32,7 @@ class ServiceCommand extends CConsoleCommand{
     
     public function actionGet_Servers(){
         echo "Get servers...\n";
+        
     }
     
     public function actionConfigTest(){
@@ -34,13 +41,16 @@ class ServiceCommand extends CConsoleCommand{
     
     public function actionStop(){
         echo "Stop server...\n";
+        
+        Yii::app()->server->stop();
     }
     
     public function actionUptime(){
-        echo "Server uptime...\n";
+        echo "Servers uptime...";
     }
     
     public function actionMonitor(){
+        //var_dump(STDIN);
         echo "Server monitor...\n";
     }
     
@@ -49,15 +59,37 @@ class ServiceCommand extends CConsoleCommand{
     }
     
     public function actionRestart(){
-        echo "Restart server...\n";
+        if(!Yii::app()->server->is_running){
+            echo "Server not running.\n";
+            exit;
+        }
+        
+        echo "Restarting server...\n";
+        
+        echo "Stop server... \n";
+        if(!Yii::app()->server->stop()){
+            echo "Failure!\n";
+        }
+        
+        if(!Yii::app()->server->is_running){
+            echo "Start server... \n";
+            Yii::app()->server->start();
+            if(Yii::app()->server->is_running){
+                echo "Failure!\n";
+            }
+        }
     }
     
     public function actionStart(){
         echo "Start server...\n";
+        
+        $server_instance = Yii::app()->server->start();
     }
     
     public function actionStatus(){
         echo "Server status...\n";
+        
+        print(Yii::app()->server->status());
     }
     
     public function actionHelp(){

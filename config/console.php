@@ -33,6 +33,10 @@ $config = array(
 				),
 			),
 		),
+		
+		'server' => array(
+		    'class'=>'ext.server.Server',
+		),
 	),
 );
 
