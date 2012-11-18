@@ -46,7 +46,15 @@ class ServiceCommand extends CConsoleCommand{
     }
     
     public function actionUptime(){
-        echo "Servers uptime...";
+        echo "Server uptime... \n";
+        
+        $time = time() - Yii::app()->server->start_time;
+        $sec = $time % 60;
+        $time = floor($time / 60);
+        $min = $time % 60;
+        $time = floor($time / 60);
+        
+        echo "started at ".date('[d-M-Y H:i:s]',Yii::app()->server->start_time).", works - ".$time."h ".$min."m ".$sec."s\n\n";
     }
     
     public function actionMonitor(){

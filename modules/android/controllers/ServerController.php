@@ -34,6 +34,16 @@ class ServerController extends Controller
 
         $this->render('start');
     }
+    
+    public function actionInterfaces(){
+	
+	$this->layout = false;
+	
+	Yii::import('ext.server.Socket');
+	
+	$socket = new Socket();
+	$socket->check();
+    }
 
 	// Uncomment the following methods and override them if needed
 	/*
