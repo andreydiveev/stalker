@@ -1,4 +1,20 @@
 <?php
+class WarningException extends Exception { 
+    public function __toString() {
+        return  "Warning: {$this->message} {$this->file} on line {$this->line}\n";
+    }
+}
+ 
+set_error_handler("error_handler", E_ALL);
+ 
+function error_handler($errno, $errstr) {
+    if($errno == E_WARNING) {
+        throw new WarningException($errstr);
+    } else if($errno == E_NOTICE) {
+        throw new NoticeException($errstr);
+    }
+}
+
 
 class ServerController extends Controller
 {
@@ -12,9 +28,15 @@ class ServerController extends Controller
 
     public function actionStatus()
     {
-
-        print_r(Yii::app()->params['server_running']);
-
+		$this->layout = false;
+		
+        //set_error_handler(create_function('$n,$s,$f,$l', 'throw new CustomException($n,$s,$f,$l);'), E_ALL);
+		
+		try{
+			socket_bind(1, 1, 1);
+		}catch(WarningException $e){
+			echo "12313";
+		}
         $this->render('index');
     }
 

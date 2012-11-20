@@ -12,7 +12,7 @@
 
  require('Daemon.php');
  require('Socket.php');
- require('Client.php');
+ require('models/Client.php');
  
  class Server extends Daemon{
     
@@ -25,11 +25,30 @@
     
     protected $welcome_msg;
     
+    protected $port_file;
+    
     
     protected function do_job(){
         
+        //if(!pcntl_signal(SIGTERM, "Server::signals")){
+        //    exit("Could not setup SIGTERM handler.\n");
+        //}
+      
+        
+        /** @todo resolve init method !!!! */
+        $baseDir = dirname(__FILE__);
+        $this->port_file = $baseDir.'/run/'.$this->name.'.port';
+        
+        $this->remove_stored_port();
+        
         $this->say("Register new socket...");
         $this->socket = new Socket($this->host, $this->port, $this->log);
+        $this->host = $this->socket->host;
+        $this->port = $this->socket->port;
+        
+        if($this->socket->port_modified){
+            $this->save_port();
+        }
         
         $this->socket->say("Working job unit1...");
         
@@ -66,12 +85,11 @@
                 $Client = new Client($new_socket);
                 $Client->id = count($this->clients)+1;
                 $Client->socket = $new_socket;
+                $Client->send($this->welcome_msg);
                 
                 $this->clients[] = $Client;
                 
-                $Client->send($this->welcome_msg);
-                
-                $this->socket->log("New client connected");
+                $this->socket->say("New client connected");
                 
             }
             
@@ -80,7 +98,7 @@
                 if (in_array($Client->socket, $read)) {
                     
                     if (false === ($buf = $Client->read())) {
-                        $this->socket->say("socket_read() falló: razón: ".socket_strerror(socket_last_error($Client->socket)));
+                        $this->socket->say("socket_read()00 falló: razón: ".socket_strerror(socket_last_error($Client->socket)));
                         break 2;
                     }
                     
@@ -123,10 +141,27 @@
         
         return false;
     }
+    
+    protected function signals(){
+        switch ($signo){
+        case SIGTERM:
+          $g_signals['SIGTERM'] = 1;
+          break;
+        case SIGHUP:
+          $g_signals['SIGHUP'] = 1;
+          break;
+        default:
+          $g_signals['OTHER'] = $signo;
+        }
+    }
    
     public function status(){
         if($this->pid_exists()){
-           $this->say("Running at ".$this->host.":".$this->port);
+            if($this->get_stored_port()){
+                $this->say("Running at ".$this->host.":".$this->port." (Stored port)"); 
+            }else{
+                $this->say("Running at ".$this->host.":".$this->port." (Base port)");
+            }
         }else{
            $this->say("Not running");
         }
@@ -200,6 +235,63 @@
             if($Client->id == $id){
                 unset($this->clients[$key]);
             }
+        }
+    }
+    
+    protected function get_stored_port(){
+        /** @todo set const
+            @todo refactor with Redis
+        */
+        
+        if (is_readable($this->port_file)) {
+            $port = (int)file_get_contents($this->port_file);
+            if($port > 0){
+                $this->port = $port;
+                return true;
+            }else{
+                return false;
+            }
+            
+            //exit;
+         
+        }else{
+            return false;
+        }
+    }
+    
+    protected function save_port(){
+        
+        if (!$this->is_running) {
+            $this->say("Can't create pid file. Server not running.");
+            //exit;  // Exception!!!!
+        }else{
+            
+            if (!file_put_contents($this->port_file, $this->port)) {
+                $this->say("Can't create time file...");
+                //exit; // Exception!!!!
+            }
+            
+            $this->say("Port (".$this->port.") saved to file.");
+        }
+        
+    }
+    
+    protected function remove_stored_port(){
+        
+        if (is_writable($this->port_file)) {
+            
+            if (!unlink($this->port_file)) {
+                $this->say("Stored port delete failed");
+                
+                return false;
+            }else{
+                $this->say("Stored port deleted");
+            }
+            
+            return true;
+            
+        }else{
+            return false;
         }
     }
     

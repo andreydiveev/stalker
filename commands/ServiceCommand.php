@@ -40,13 +40,13 @@ class ServiceCommand extends CConsoleCommand{
     }
     
     public function actionStop(){
-        echo "Stop server...\n";
+        echo "\nStop server...\n";
         
         Yii::app()->server->stop();
     }
     
     public function actionUptime(){
-        echo "Server uptime... \n";
+        echo "\nServer uptime... \n";
         
         $time = time() - Yii::app()->server->start_time;
         $sec = $time % 60;
@@ -84,7 +84,7 @@ class ServiceCommand extends CConsoleCommand{
             exit;
         }
         
-        echo "Restarting server...\n";
+        echo "\nRestarting server...\n";
         
         echo "Stop server... \n";
         if(!Yii::app()->server->stop()){
@@ -101,13 +101,13 @@ class ServiceCommand extends CConsoleCommand{
     }
     
     public function actionStart(){
-        echo "Start server...\n";
+        echo "\nStart server...\n";
         
         $server_instance = Yii::app()->server->start();
     }
     
     public function actionStatus(){
-        echo "Server status...\n";
+        echo "\nServer status...\n";
         
         print(Yii::app()->server->status());
     }

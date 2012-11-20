@@ -129,7 +129,7 @@ abstract class Daemon extends CComponent implements Daemonic{
             $pid = (int)file_get_contents($this->pid_file);
             
             if ($pid > 0 && posix_kill($pid, 0)) {
-                if (is_readable($this->pid_file)) { 
+                if (is_readable($this->time_file)) { 
                     $this->start_time = (int)file_get_contents($this->time_file);
                 }
                 
@@ -220,7 +220,7 @@ abstract class Daemon extends CComponent implements Daemonic{
     }
     
     protected function say($phrase, $logging = true){
-        $phrase = "Server: ".$phrase;
+        $phrase = "Daemon: ".$phrase;
         
         echo $phrase."\n";
         
