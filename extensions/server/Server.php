@@ -3,11 +3,13 @@
 /**
  * Game server
  * @author Andrey Diveev <andrey.diveev@gmail.com>
- * @version 0.1
+ * @version 0.1.2
  * @date 18.11.2012 4:24
  *
  * @todo config
  * @todo json parese request
+ * @todo control SIGTERM if crashed! Child process stay running!!!
+ * @todo include files by config import
  */
 
  require('Daemon.php');
@@ -65,11 +67,13 @@
             'who_online',
         );
         
+        /** @todo Consider usleep */
         do {
             $read = array();
             $read[] = $this->socket->resource; 
             $read = array_merge($read,$this->get_clients_sockets());
             
+            /** @todo try/catch */
             if(socket_select($read,$write = NULL, $except = NULL, $tv_sec = 5) < 1){
                 continue;
             }
@@ -87,7 +91,7 @@
                 $Client->socket = $new_socket;
                 $Client->send($this->welcome_msg);
                 
-                $this->clients[] = $Client;
+                $this->clients[$Client->id] = $Client;
                 
                 $this->socket->say("New client connected");
                 
@@ -223,19 +227,28 @@
     }
     
     protected function detach_client_by_id($id){
-        foreach($this->clients as $key => $Client){
-            if($Client->id == $id){
-                unset($this->clients[$key]);
+        if(isset($this->clients[$id])){
+            $Client = $this->clients[$id];
+            if(isset($Client->id) && $Client->id == $id){
+                unset($this->clients[$id]);
+                
+                return true;
             }
         }
+        
+        return false;
     }
     
     protected function get_client_by_id($id){
-        foreach($this->clients as $key => $Client){
+        if(isset($this->clients[$id])){
             if($Client->id == $id){
-                unset($this->clients[$key]);
+                unset($this->clients[$id]);
+                
+                return true;
             }
         }
+        
+        return false;
     }
     
     protected function get_stored_port(){

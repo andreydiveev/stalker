@@ -5,6 +5,8 @@
  * @author Andrey Diveev <andrey.diveev@gmail.com>
  * @version 0.1
  * @date 18.11.2012 4:24
+ *
+ * @todo Move to extension for using GIT
  */
 class ServiceCommand extends CConsoleCommand{
     public function actionIndex(){

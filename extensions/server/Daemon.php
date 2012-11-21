@@ -22,18 +22,32 @@ abstract class Daemon extends CComponent implements Daemonic{
         //umask(0);
         //chdir('/');
         
+        /** @todo Use if running */
+        declare(ticks = 1);
+        
+        pcntl_signal(SIGTERM, "Daemon::sig_handler");
+        pcntl_signal(SIGHUP,  "Daemon::sig_handler");
+        pcntl_signal(SIGUSR1, "Daemon::sig_handler");
+        
+        posix_kill(posix_getpid(), SIGUSR1);
+        
+        error_reporting(E_ALL);  
+        ob_implicit_flush();
+        
+        set_error_handler("Daemon::error_handler", E_ALL);
+        
+       
+        
         $baseDir = dirname(__FILE__);
         ini_set('error_log',$baseDir.'/log/'.$this->name.'.error.log');
         //fclose(STDIN);
         //fclose(STDOUT);
         //fclose(STDERR);
         $STDIN = fopen('/dev/null', 'r');
-        $this->log = fopen($baseDir.'/log/'.$this->name.'.application.log', 'ab');
+        $this->log = $this->init_log();
         //$STDERR = fopen($baseDir.'/log/error.log', 'ab');
         
         set_time_limit(0);
-        error_reporting(E_ALL);  
-        ob_implicit_flush();
         
         //$this->error('Test error');
         
@@ -43,6 +57,10 @@ abstract class Daemon extends CComponent implements Daemonic{
         if($this->pid_exists()){
             $this->is_running = true;
         }
+    }
+    
+    protected function init_log(){
+        $this->log = fopen(dirname(__FILE__).'/log/'.$this->name.'.application.log', 'ab');
     }
     
     protected function before_start(){}
@@ -97,29 +115,33 @@ abstract class Daemon extends CComponent implements Daemonic{
         //pcntl_signal(SIGHUP, SIG_IGN);
         //pcntl_signal(SIGHUP, SIG_DFL);
         
-        /*
-        declare(ticks=1) {
-            // Здесь полный сценарий
-            
-            function sig_handler($signo) {
-                switch ($signo) {
-                    case SITERM:
-                    case SIGQUIT:
-                        // удаляем временные файлы
-                        delete_all_tmp_files();
-                        // завершаем работу приложения
-                        exit;
-                    break;
-                    case SIGHUP:
-                        reload_configuration_file();
-                    break;
-                }
-            }
-        }
-        */
+        
+        
+        
         
         $this->do_job();
      
+    }
+    
+    public function sig_handler($signo){
+        
+        switch ($signo) 
+        {
+            case SIGTERM:
+                $this->say("Terminate!");
+                // Обычное завершение работы
+                exit;
+                break;
+            case SIGHUP:
+                $this->say("Need reload!");
+                // Требуется перезапуск
+                break;
+            case SIGUSR1:
+                $this->say("User signal 1!");
+                break;
+            default:
+                // Сюда попадают все остальные сигналы
+        }
     }
     
     protected function pid_exists(){
@@ -231,6 +253,9 @@ abstract class Daemon extends CComponent implements Daemonic{
     
     protected function log($msg){
         $msg = date('[d-M-Y H:i:s] ',time()).$msg;
+        
+        if(!is_resource($this->log)){$this->init_log();}
+        
         fwrite($this->log, $msg."\n");
     }
     
@@ -239,6 +264,10 @@ abstract class Daemon extends CComponent implements Daemonic{
         // Here some actions, for example, send mail.
         
         error_log($msg);
+    }
+    
+    public function error_handler($errorCode, $errorMessage, $errorFile, $errorLine) {
+        throw new CustomException($errorMessage, $errorLine, $errorFile, $errorCode);
     }
     
 }

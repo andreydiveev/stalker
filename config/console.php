@@ -10,8 +10,8 @@ $config = array(
 	'preload'=>array('log'),
 	
 	'import'=>array(
-		'application.models.*',
-		'application.components.*',
+		//'application.models.*',
+		'ext.server.components.CustomException',
 	),
 
 	// application components

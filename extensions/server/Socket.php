@@ -1,36 +1,5 @@
 <?php
 
-
-/** @todo resolve exception class and yii component */
-
-class WarningException extends Exception { 
-    public function __toString() {
-        return  "Warning: {$this->message} {$this->file} on line {$this->line}\n";
-    }
-}
-
-class NoticeException extends Exception { 
-    public function __toString() {
-        return  "Notice: {$this->message} {$this->file} on line {$this->line}\n";
-    }
-}
-
-class ACustomException extends Exception {
-   public function __construct($message, $errorLevel = 0, $errorFile = '', $errorLine = 0) {
-      parent::__construct($message, $errorLevel);
-      $this->file = $errorFile;
-      $this->line = $errorLine;
-   }
-}
-
-function error_handler($errno, $errstr) {
-    if($errno == E_WARNING) {
-        throw new WarningException($errstr);
-    } else if($errno == E_NOTICE) {
-        throw new NoticeException($errstr);
-    }
-}
-
 class Socket{
     
     public $host;
@@ -67,13 +36,11 @@ class Socket{
             E_CORE_WARNING | E_ALL | E_NOTICE | E_STRICT | E_DEPRECATED |
         */
         
-        error_reporting(E_ALL);  
-        ob_implicit_flush();
+        
         
         //throw new tes();
         //$obj->dod();
         //throw new CustomException(1,1,1,1);
-        set_error_handler("error_handler", E_ALL);
     }
 
     static public function util($n,$s,$f,$l){
