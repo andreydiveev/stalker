@@ -12,6 +12,9 @@ class Client extends CModel{
     public $socket;
     public $name;
     
+    public $host;
+    public $port;
+    
     public $buffer;
     
     /**
@@ -20,12 +23,14 @@ class Client extends CModel{
 	 * See {@link CModel::scenario} on how scenario is used by models.
 	 * @see getScenario
 	 */
-	public function __construct($scenario='')
+	public function __construct($socket = null, $scenario='')
 	{
 		$this->setScenario($scenario);
-		$this->init();
+		$this->init($socket);
 		$this->attachBehaviors($this->behaviors());
 		$this->afterConstruct();
+        
+        $this->say("New client created");
 	}
 
 	/**
@@ -34,8 +39,22 @@ class Client extends CModel{
 	 * You may override this method to provide code that is needed to initialize the model (e.g. setting
 	 * initial property values.)
 	 */
-	public function init()
-	{
+	public function init($socket = null){
+        
+        $this->socket = $socket;
+        
+        if($this->socket !== null){
+            try{
+                socket_getpeername($this->socket, $this->host, $this->port);
+                $this->say("Init client [".$this->host.":".$this->port."]");
+            }catch(CustomException $e){
+                $this->say("Init client [CustomException] Can't get peer name of client: ".$e->getMessage());
+            }catch(Exception $e){
+                $this->say("Init client. Can't get peer name of client: ".$e->getMessage());
+            }
+        }else{
+            $this->say("Init client (no socket)");
+        }
 	}
     
     /**
@@ -44,9 +63,8 @@ class Client extends CModel{
 	 * You may override this method to do postprocessing after model creation.
 	 * Make sure you call the parent implementation so that the event is raised properly.
 	 */
-	protected function afterConstruct()
+	protected function afterConstruct($q = null)
 	{
-		echo "Client: New client created\n";
 	}
     
     public function attributeNames(){
@@ -54,21 +72,29 @@ class Client extends CModel{
             'id',
             'socket',
             'name',
+            'host',
+            'port',
         );
     }
     
     public function disconnect(){
-        socket_close($this->socket);
+        try{
+            socket_close($this->socket);
+        }catch(CustomException $e){
+            $this->say("[CustomException] Can't close client socket: ".$e->getMessage());
+        }catch (Exception $e){
+            $this->say("Can't close client socket: ".$e->getMessage());
+        }
     }
     
     public function send($msg){
         $msg .= "\n";
         try{
             socket_write($this->socket, $msg, strlen($msg));
-        }catch(WarningException $e){
-            echo "can't write..\n";
+        }catch(CustomException $e){
+            $this->say("[CustomException] Can't send message to client: ".$e->getMessage());
         }catch (Exception $e){
-           echo "error catched2200\n";
+            $this->say("Can't send message to client: ".$e->getMessage());
         }
     }
     
@@ -76,13 +102,17 @@ class Client extends CModel{
         
         try{
             $this->buffer = socket_read($this->socket, 2048, PHP_NORMAL_READ);
-        }catch(WarningException $e){
-            echo "can't read..\n";
+        }catch(CustomException $e){
+            $this->say("[CustomException] Can't read message from client: ".$e->getMessage());
         }catch (Exception $e){
-           echo "error catched22\n";
+            $this->say("Can't read message from client: ".$e->getMessage());
         }
         
         return $this->buffer;
+    }
+    
+    public function say($msg){
+        echo "Client: ".$msg."\n";
     }
     
 }

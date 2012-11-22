@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @author Andrey Diveev <andrey.diveev@gamil.com>
+ * @version v0.1.2
+ * @package Server
+ */
+
 class CustomException extends Exception {
     
     public function __construct($errorMessage, $errorLine, $errorFile, $errorCode = 0, Exception $previous = null) {

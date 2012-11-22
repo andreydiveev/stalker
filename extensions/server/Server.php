@@ -10,6 +10,10 @@
  * @todo json parese request
  * @todo control SIGTERM if crashed! Child process stay running!!!
  * @todo include files by config import
+ * @todo Cover PHPDoc
+ * @todo Cover UnitTests
+ * @todo use Redis or another NoSQL or Memcached
+ * @todo remove trash code
  */
 
  require('Daemon.php');
@@ -35,6 +39,9 @@
         //if(!pcntl_signal(SIGTERM, "Server::signals")){
         //    exit("Could not setup SIGTERM handler.\n");
         //}
+      
+        
+        
       
         
         /** @todo resolve init method !!!! */
@@ -65,35 +72,51 @@
             'shutdown',
             'whoami',
             'who_online',
+            'broadcast',
         );
         
         /** @todo Consider usleep */
         do {
+            
+            /** @todo Use is_running */
+            
             $read = array();
             $read[] = $this->socket->resource; 
             $read = array_merge($read,$this->get_clients_sockets());
             
-            /** @todo try/catch */
-            if(socket_select($read,$write = NULL, $except = NULL, $tv_sec = 5) < 1){
+            try{
+                if(socket_select($read,$write = NULL, $except = NULL, $tv_sec = 5) < 1){
+                    continue;
+                }
+            }catch(CustomException $e){
+                $this->say("[CustomException] Can't select socket: ".$e->getMessage());
+                continue;
+            }catch(Exception $e){
+                $this->say("[Exception] Can't select socket: ".$e->getMessage());
                 continue;
             }
             
             // Handle new Connections
             if (in_array($this->socket->resource, $read)) {
                 
-                if (($new_socket = socket_accept($this->socket->resource)) === false) {
-                    $this->socket->log("socket_accept() fail: reazon: " . socket_strerror(socket_last_error($this->socket->resource)));
-                    break;
+                try{
+                    if (($new_socket = socket_accept($this->socket->resource)) === false) {
+                        $this->socket->log("socket_accept() fail: reazon: " . socket_strerror(socket_last_error($this->socket->resource)));
+                        break;
+                    }
+                }catch(CustomException $e){
+                    $this->say("[CustomException] Can't accept socket: ".$e->getMessage());
+                }catch(Exception $e){
+                    $this->say("[Exception] Can't accept socket: ".$e->getMessage());
                 }
                 
                 $Client = new Client($new_socket);
                 $Client->id = count($this->clients)+1;
-                $Client->socket = $new_socket;
                 $Client->send($this->welcome_msg);
                 
                 $this->clients[$Client->id] = $Client;
                 
-                $this->socket->say("New client connected");
+                $this->say("New client connected");
                 
             }
             
@@ -146,18 +169,34 @@
         return false;
     }
     
-    protected function signals(){
+    /*public function sig_handler($signo){
+        
+        $log = fopen(dirname(__FILE__).'/log/debug.application.log', 'ab');
+        
         switch ($signo){
-        case SIGTERM:
-          $g_signals['SIGTERM'] = 1;
-          break;
-        case SIGHUP:
-          $g_signals['SIGHUP'] = 1;
-          break;
-        default:
-          $g_signals['OTHER'] = $signo;
+            case SIGTERM:
+                #15
+                $msg = "Daemon: Terminate (SIGTERM - ".SIGTERM.")";
+                exit;
+            break;
+            
+            case SIGHUP:
+                $msg = "Daemon: Need reload! (SIGHUP - ".SIGHUP.")";
+            break;
+            
+            case SIGUSR1:
+                // #10
+                $msg = "User signal (SIGUSR1 - ".SIGUSR1.")";
+            break;
+            
+            default:
+                $msg = "Daemon: Unknown signal (".$signo.")";
+            break;
         }
-    }
+        
+        echo $msg."\n";
+        fwrite($log, date('[d-M-Y H:i:s] ',time()).$msg."\n");
+    }*/
    
     public function status(){
         if($this->pid_exists()){
@@ -199,6 +238,13 @@
         $Client->send("Your id: ".$Client->id);
     }
     
+    protected function broadcastCommand($Client){
+        foreach($this->clients as $client){
+            if($client->id == $Client->id){continue;}
+            $client->send("Message from client: ".$Client->id."\n");
+        }
+    }
+    
     protected function quitCommand($Client){
         echo "Handler 'quit' called:\n";
         
@@ -211,7 +257,7 @@
         
         $msg = "";
         foreach($this->clients as $client){
-            $msg .= "- ".$client->id."\n";
+            $msg .= "- ".$client->id." [".$client->host.":".$client->port."]\n";
         }
         
         $Client->send($msg);

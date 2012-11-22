@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Daemon component
+ * @author Andrey Diveev <andrey.diveev@gamil.com>
+ * @version v0.1.2
+ *
+ * @todo cover PHPDoc
+ * @todo include files by config import
+ * @todo split errors and messages to different logs
+ */
+
 require('Daemonic.php');
  
 abstract class Daemon extends CComponent implements Daemonic{
@@ -22,34 +32,25 @@ abstract class Daemon extends CComponent implements Daemonic{
         //umask(0);
         //chdir('/');
         
-        /** @todo Use if running */
+        // Регистрируем сигналы
         declare(ticks = 1);
-        
-        pcntl_signal(SIGTERM, "Daemon::sig_handler");
-        pcntl_signal(SIGHUP,  "Daemon::sig_handler");
-        pcntl_signal(SIGUSR1, "Daemon::sig_handler");
-        
-        posix_kill(posix_getpid(), SIGUSR1);
+        //pcntl_signal(SIGTERM, "self::sig_handler");
+        pcntl_signal(SIGUSR1, function ($signal) { 
+            echo "usr\n"; 
+        });
         
         error_reporting(E_ALL);  
         ob_implicit_flush();
         
-        set_error_handler("Daemon::error_handler", E_ALL);
+        set_time_limit(0);
+        set_error_handler("self::error_handler", E_ALL);
         
-       
+        $this->init_log();
         
         $baseDir = dirname(__FILE__);
         ini_set('error_log',$baseDir.'/log/'.$this->name.'.error.log');
-        //fclose(STDIN);
-        //fclose(STDOUT);
-        //fclose(STDERR);
         $STDIN = fopen('/dev/null', 'r');
-        $this->log = $this->init_log();
-        //$STDERR = fopen($baseDir.'/log/error.log', 'ab');
         
-        set_time_limit(0);
-        
-        //$this->error('Test error');
         
         $this->time_file = $baseDir.'/run/'.$this->name.'.time';
         $this->pid_file = $baseDir.'/run/'.$this->name.'.pid';
@@ -63,7 +64,7 @@ abstract class Daemon extends CComponent implements Daemonic{
         $this->log = fopen(dirname(__FILE__).'/log/'.$this->name.'.application.log', 'ab');
     }
     
-    protected function before_start(){}
+    //protected function before_start(){}
     
     public function start(){
         
@@ -96,6 +97,7 @@ abstract class Daemon extends CComponent implements Daemonic{
         
         $pid = pcntl_fork();
         
+        
         if ($pid == -1) {
             exit;
         } elseif ($pid > 0) {
@@ -104,14 +106,6 @@ abstract class Daemon extends CComponent implements Daemonic{
         
         $this->set_pid();
         
-        //SIGTERM - $kill -s TERM <pid>
-        //SIGKILL
-        //SIGSTOP
-        
-        //pcntl_signal(SIGTERM, 'sigterm_handler');
-        //pcntl_signal(SIGTERM, 'sig_handler');
-        //pcntl_signal(SIGQUIT, 'sig_handler');
-        //pcntl_signal(SIGHUP,  'sig_handler');
         //pcntl_signal(SIGHUP, SIG_IGN);
         //pcntl_signal(SIGHUP, SIG_DFL);
         
@@ -123,26 +117,6 @@ abstract class Daemon extends CComponent implements Daemonic{
      
     }
     
-    public function sig_handler($signo){
-        
-        switch ($signo) 
-        {
-            case SIGTERM:
-                $this->say("Terminate!");
-                // Обычное завершение работы
-                exit;
-                break;
-            case SIGHUP:
-                $this->say("Need reload!");
-                // Требуется перезапуск
-                break;
-            case SIGUSR1:
-                $this->say("User signal 1!");
-                break;
-            default:
-                // Сюда попадают все остальные сигналы
-        }
-    }
     
     protected function pid_exists(){
         /** @todo set const */
@@ -185,6 +159,8 @@ abstract class Daemon extends CComponent implements Daemonic{
     }
     
     protected function del_pid(){
+        
+        /** @todo Compare deleted .pid file with posix_getpid()*/
         
         if (is_writable($this->pid_file)) {
             $pid = (int)file_get_contents($this->pid_file);
@@ -268,6 +244,10 @@ abstract class Daemon extends CComponent implements Daemonic{
     
     public function error_handler($errorCode, $errorMessage, $errorFile, $errorLine) {
         throw new CustomException($errorMessage, $errorLine, $errorFile, $errorCode);
+    }
+    
+    public function sig_handler($signo){
+        echo "usr sig\n";
     }
     
 }
