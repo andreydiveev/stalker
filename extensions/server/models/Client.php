@@ -101,7 +101,7 @@ class Client extends CModel{
     public function read(){
         
         try{
-            $this->buffer = socket_read($this->socket, 2048, PHP_NORMAL_READ);
+            $this->buffer = socket_read($this->socket, 1024);
         }catch(CustomException $e){
             $this->say("[CustomException] Can't read message from client: ".$e->getMessage());
         }catch (Exception $e){
