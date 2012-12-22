@@ -43,7 +43,7 @@ abstract class Daemon extends CComponent implements Daemonic{
         ob_implicit_flush();
         
         set_time_limit(0);
-        set_error_handler("self::error_handler", E_ALL);
+        set_error_handler("Daemon::error_handler", E_ALL);
         
         $this->init_log();
         

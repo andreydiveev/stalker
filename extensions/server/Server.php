@@ -23,7 +23,8 @@
  class Server extends Daemon{
     
     public $name = 'unit1';
-    public $host = '178.250.244.82';
+    //public $host = '178.250.244.82';
+    public $host = '178.250.245.120';
     public $port = 13031;
     
     protected $socket = null;
@@ -77,6 +78,8 @@
         
         /** @todo Consider usleep */
         do {
+            
+            usleep(1000); // 1 == 0.000001s
             
             /** @todo Use is_running */
             
@@ -151,11 +154,11 @@
                         $this->$command_hendler($Client);
                         break;
                     }else{
-                        $msg = "Unknown command '".$command_name."'\n";
+                        $msg = "{'msg':'Unknown command \'".$command_name."\''}\n";
                     }
                     
                     $Client->send($msg);
-                    $Client->send("Client {$Client->id}: Usted dijo '$buf'.\n");
+                    //$Client->send("Client {$Client->id}: Usted dijo '$buf'.\n");
                     
                     $this->socket->say($buf);
                 }
